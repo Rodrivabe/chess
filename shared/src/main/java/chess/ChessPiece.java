@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -59,16 +60,39 @@ public class ChessPiece {
 
     public PieceMovesCalculator legalMoves(){
         switch(type){
-            case KING -> new KingMovesCalculator();
-            case BISHOP -> new BishopMovesCalculator();
-            default ->System.out.println("Invalid Piece Type");
-
+            case KING:
+                return new KingMovesCalculator();
+            case BISHOP:
+                return new BishopMovesCalculator();
+            default:
+                try {
+                    throw new InvalidMoveException("Invalid Move");
+                } catch (InvalidMoveException e) {
+                    throw new RuntimeException(e);
+                }
 
         }
 
-
     }
+
+
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return legalMoves().pieceMoves(board, myPosition, pieceColor);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPosition that = (ChessPosition) o;
+        return row == that.row && col == that.col;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(row, col);
+    }
 }
+
+
