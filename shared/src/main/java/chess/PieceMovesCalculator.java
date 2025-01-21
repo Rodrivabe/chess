@@ -1,17 +1,9 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
-public class PieceMovesCalculator {
+public interface PieceMovesCalculator {
 
-    public Collection<ChessMove> getBishopMoves() {
-        return new ArrayList<>();
+    Collection<ChessMove> pieceMoves(ChessBoard board,  ChessPosition position,  ChessGame.TeamColor teamColor);
 
-    }
-
-    public Collection<ChessMove> getKingMoves() {
-        return new ArrayList<>();
-
-    }
 }
