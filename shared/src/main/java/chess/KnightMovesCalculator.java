@@ -3,11 +3,11 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class KingMovesCalculator implements PieceMovesCalculator {
+public class KnightMovesCalculator implements PieceMovesCalculator {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board,  ChessPosition position,  ChessGame.TeamColor teamColor){
         Collection<ChessMove> moves = new ArrayList<>();
-        int [][] directions = {{1,-1}, {1,0}, {1,1}, {0,-1}, {0, 1}, {-1,-1}, {-1,0}, {-1,1}};
+        int [][] directions = {{1,-2}, {-1,-2}, {2,-1}, {2,1}, {1, 2}, {-1,2}, {-2,-1}, {-2,1}};
 
         ChessPosition target_position;
         int row_position = position.getRow();
@@ -39,7 +39,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
     }
 
     boolean inBounds(int row, int col){
-        return row < 8 && row > 0 && col > 0 && col < 8;
+        return row < 9 && row > 0 && col > 0 && col < 9;
     }
 
 

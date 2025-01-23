@@ -3,11 +3,11 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class BishopMovesCalculator implements PieceMovesCalculator {
+public class RookMovesCalculator implements PieceMovesCalculator {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor teamColor){
         Collection<ChessMove> moves = new ArrayList<>();
-        int [][] directions = {{1,-1}, {1,1}, {-1,-1}, {-1,1}};
+        int [][] directions = {{0,-1}, {1,0}, {0,1}, {-1,0}};
 
         ChessPosition target_position;
         int row_position = position.getRow();
@@ -37,7 +37,7 @@ public class BishopMovesCalculator implements PieceMovesCalculator {
                     } else {
                         break;
                     }
-            }
+                }
 
             }
         }
