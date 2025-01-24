@@ -15,6 +15,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
             direction = 1;
         } else {
             direction = -1;}
+
         /** Move types
          * 1 = move forwards
          * 2 = first move
@@ -22,7 +23,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
         if (can_move_forward(board, position, direction)) {
              add_valid_positions(1, position, direction, endPositions);
-            if (is_first_move(position, direction, teamColor) && can_move_forward(board, position, direction*2)) {
+            if (is_first_move(position, teamColor) && can_move_forward(board, position, direction*2)) {
                 add_valid_positions(2, position, direction, endPositions);
             }
         }
@@ -75,7 +76,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     }
 
 
-    private boolean is_first_move( ChessPosition position, int direction, ChessGame.TeamColor teamColor) {
+    private boolean is_first_move( ChessPosition position, ChessGame.TeamColor teamColor) {
         int row_position = position.getRow();
         return teamColor == ChessGame.TeamColor.BLACK && row_position == 7 || teamColor == ChessGame.TeamColor.WHITE && row_position == 2;
     }

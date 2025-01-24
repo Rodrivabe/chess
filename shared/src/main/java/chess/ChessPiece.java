@@ -89,19 +89,6 @@ public class ChessPiece {
         return legalMoves().pieceMoves(board, myPosition, pieceColor);
     }
 
-    /*@Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        ChessPiece that = (ChessPiece) obj;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
-    }
-     */
 
     @Override
     public boolean equals(Object o) {
