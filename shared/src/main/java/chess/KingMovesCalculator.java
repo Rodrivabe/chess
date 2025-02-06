@@ -39,7 +39,7 @@ public class KingMovesCalculator implements PieceMovesCalculator {
     }
 
     boolean inBounds(int row, int col){
-        return row < 8 && row > 0 && col > 0 && col < 8;
+        return row < 9 && row > 0 && col > 0 && col < 9;
     }
 
 

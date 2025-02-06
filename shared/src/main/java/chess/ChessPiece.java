@@ -77,8 +77,8 @@ public class ChessPiece {
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }
-
         }
+
 
     }
 
