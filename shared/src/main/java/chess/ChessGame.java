@@ -36,7 +36,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-       this.turnColor = team;
+        this.turnColor = team;
     }
 
     /**
@@ -55,9 +55,11 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        /** This function iterates through every possible move from the
+         * piece it's analysing and compares to see if the king will be in danger**/
 
         ChessPiece piece = board.getPiece(startPosition);
-        if(piece == null){
+        if (piece == null) {
             return new ArrayList<>();
         }
 
@@ -84,82 +86,87 @@ public class ChessGame {
 
     }
 
-    /**
-     * Makes a move in a chess game
-     *
-     * @param move chess move to preform
-     * @throws InvalidMoveException if move is invalid
-     */
+
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        /**
+         * Makes a move in a chess game
+         *
+         * @param move chess move to preform
+         * @throws InvalidMoveException if move is invalid
+         */
+
         ChessPiece piece = board.getPiece(move.getStartPosition());
-        if (piece == null){
+        if (piece == null) {
             throw new InvalidMoveException("There is not a piece in there, Bruh!");
         }
-        if(turnColor != piece.getTeamColor()){
-            throw  new InvalidMoveException("It's not your turn :D");
+        if (turnColor != piece.getTeamColor()) {
+            throw new InvalidMoveException("It's not your turn :D");
 
         }
 
-        if(isInCheck(turnColor)){
-            throw  new InvalidMoveException("You are in Check :o ");
+        if (isInCheck(turnColor)) {
+            throw new InvalidMoveException("You are in Check :o ");
         }
 
         Collection<ChessMove> validated_moves = validMoves(move.getStartPosition());
 
 
-        if(!validated_moves.contains(move)){
-            throw  new InvalidMoveException("That's Illegal! D:");
+        if (!validated_moves.contains(move)) {
+            throw new InvalidMoveException("That's Illegal! D:");
         }
 
         board.addPiece(move.getEndPosition(), piece);
         board.addPiece(move.getStartPosition(), null);
 
-        if(move.getPromotionPiece() != null){
+        if (move.getPromotionPiece() != null) {
             piece = new ChessPiece(turnColor, move.getPromotionPiece());
             board.addPiece(move.getEndPosition(), piece);
         }
-        if(turnColor == TeamColor.WHITE){
+        if (turnColor == TeamColor.WHITE) {
             turnColor = TeamColor.BLACK;
-        }else{
+        } else {
             turnColor = TeamColor.WHITE;
         }
 
     }
 
 
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @return True if the specified team is in check
-     */
     public boolean isInCheck(TeamColor teamColor) {
+        /**
+         * Determines if the given team is in check
+         *
+         * @param teamColor which team to check for check
+         * @return True if the specified team is in check
+         */
+
+
         ChessPosition kingsPosition = findKing(teamColor);
         int direction;
         if (teamColor == TeamColor.WHITE) {
             direction = -1;
         } else {
-            direction = 1;}
+            direction = 1;
+        }
 
-        for(int i = 1; i < 9; i++){
-            for(int k = 1; k < 9; k++){
+        for (int i = 1; i < 9; i++) {
+            for (int k = 1; k < 9; k++) {
                 ChessPosition current_position = new ChessPosition(i, k);
                 ChessPiece current_piece = board.getPiece(current_position);
 
 
-                if(current_piece != null && current_piece.getTeamColor() != teamColor){
+                if (current_piece != null && current_piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> current_piece_moves = current_piece.pieceMoves(board, current_position);
-                    if(current_piece.getPieceType() == ChessPiece.PieceType.PAWN){
+                    if (current_piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                         Collection<ChessPosition> end_positions = if_pawn_could_captured(current_position, direction);
-                        for(ChessPosition position : end_positions){
-                            if(position == kingsPosition){
+                        for (ChessPosition position : end_positions) {
+                            if (position == kingsPosition) {
                                 return true;
                             }
                         }
                     }
-                    for(ChessMove move : current_piece_moves){
+                    for (ChessMove move : current_piece_moves) {
 
-                        if(move.getEndPosition().equals(kingsPosition)){
+                        if (move.getEndPosition().equals(kingsPosition)) {
                             return true;
                         }
                     }
@@ -172,11 +179,13 @@ public class ChessGame {
     }
 
     private ChessPosition findKing(TeamColor teamColor) {
-        for(int i = 1; i < 9; i++){
-            for(int k = 1; k < 9; k++){
+        /** Looks for the king in the board **/
+
+        for (int i = 1; i < 9; i++) {
+            for (int k = 1; k < 9; k++) {
                 ChessPosition current_position = new ChessPosition(i, k);
                 ChessPiece current_piece = board.getPiece(current_position);
-                if(current_piece != null && current_piece.getPieceType() == ChessPiece.PieceType.KING && current_piece.getTeamColor() == teamColor){
+                if (current_piece != null && current_piece.getPieceType() == ChessPiece.PieceType.KING && current_piece.getTeamColor() == teamColor) {
                     return current_position;
                 }
             }
@@ -186,17 +195,19 @@ public class ChessGame {
 
     }
 
-    private Collection<ChessPosition> if_pawn_could_captured( ChessPosition position, int direction) {
+    private Collection<ChessPosition> if_pawn_could_captured(ChessPosition position, int direction) {
+        /** Simulates the moves a pawn will do if it could capture **/
+
         Collection<ChessPosition> endPositions = new ArrayList<>();
-        int [][] diagonal_directions = {{direction, 1}, {direction, -1}};
+        int[][] diagonal_directions = {{direction, 1}, {direction, -1}};
         int row_position = position.getRow();
         int col_position = position.getColumn();
-        for(int[] diagonal_position : diagonal_directions){
+        for (int[] diagonal_position : diagonal_directions) {
             int diagonal_row = diagonal_position[0];
-            int diagonal_col =diagonal_position[1];
-            ChessPosition target_position = new ChessPosition(row_position+diagonal_row, col_position+diagonal_col);
+            int diagonal_col = diagonal_position[1];
+            ChessPosition target_position = new ChessPosition(row_position + diagonal_row, col_position + diagonal_col);
 
-            if (inBounds(target_position.getRow(), target_position.getColumn())){
+            if (inBounds(target_position.getRow(), target_position.getColumn())) {
                 endPositions.add(target_position);
             }
         }
@@ -204,18 +215,21 @@ public class ChessGame {
     }
 
 
-    boolean inBounds(int row, int col){
+    boolean inBounds(int row, int col) {
+        /** Makes sure that calculations are being done inside the limits of the board**/
         return row < 9 && row > 0 && col > 0 && col < 9;
     }
 
-    /**
-     * Determines if the given team is in checkmate
-     *
-     * @param teamColor which team to check for checkmate
-     * @return True if the specified team is in checkmate
-     */
+
     public boolean isInCheckmate(TeamColor teamColor) {
-        if(!isInCheck(teamColor)){
+        /**
+         * Determines if the given team is in checkmate
+         *
+         * @param teamColor which team to check for checkmate
+         * @return True if the specified team is in checkmate
+         */
+
+        if (!isInCheck(teamColor)) {
             return false;
         }
         return checkMate(teamColor);
@@ -223,8 +237,9 @@ public class ChessGame {
     }
 
     private boolean checkMate(TeamColor teamColor) {
+        /** isInCheckmate and isInStalemate use this function to check if the king is surrounded by danger **/
 
-        for(int i = 1; i < 9; i++) {
+        for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
 
                 ChessPosition myCurrentPosition = new ChessPosition(i, k);
@@ -243,7 +258,7 @@ public class ChessGame {
                         boolean stillInCheck = isInCheck(teamColor);
                         board.addPiece(myCurrentPosition, myCurrentPiece);
                         board.addPiece(target_position, target_piece);
-                        if(!stillInCheck){
+                        if (!stillInCheck) {
                             return false;
                         }
                     }
@@ -256,15 +271,17 @@ public class ChessGame {
     }
 
 
-    /**
-     * Determines if the given team is in stalemate, which here is defined as having
-     * no valid moves
-     *
-     * @param teamColor which team to check for stalemate
-     * @return True if the specified team is in stalemate, otherwise false
-     */
     public boolean isInStalemate(TeamColor teamColor) {
-        if(isInCheck(teamColor)) {
+        /**
+         * Determines if the given team is in stalemate, which here is defined as having
+         * no valid moves
+         *
+         * @param teamColor which team to check for stalemate
+         * @return True if the specified team is in stalemate, otherwise false
+         */
+
+
+        if (isInCheck(teamColor)) {
             return false;
         }
 
@@ -272,21 +289,27 @@ public class ChessGame {
 
     }
 
-    /**
-     * Sets this game's chessboard with a given board
-     *
-     * @param board the new board to use
-     */
+
     public void setBoard(ChessBoard board) {
-         this.board = board;
+        /**
+         * Sets this game's chessboard with a given board
+         *
+         * @param board the new board to use
+         */
+
+
+        this.board = board;
     }
 
-    /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
-     */
+
     public ChessBoard getBoard() {
+        /**
+         * Gets the current chessboard
+         *
+         * @return the chessboard
+         */
+
+
         return board;
     }
 
