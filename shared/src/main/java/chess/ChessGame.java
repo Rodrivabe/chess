@@ -101,7 +101,7 @@ public class ChessGame {
 
         ChessPiece piece = board.getPiece(move.getStartPosition());
         if (piece == null) {
-            throw new InvalidMoveException("There is not a piece in there, Bruh!");
+            throw new InvalidMoveException("There is not a piece in there, Bruh!!");
         }
         if (turnColor != piece.getTeamColor()) {
             throw new InvalidMoveException("It's not your turn :D");
