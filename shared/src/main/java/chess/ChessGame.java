@@ -55,8 +55,6 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        /** This function iterates through every possible move from the
-         * piece it's analysing and compares to see if the king will be in danger**/
 
         ChessPiece piece = board.getPiece(startPosition);
         if (piece == null) {
@@ -67,28 +65,34 @@ public class ChessGame {
         Collection<ChessMove> validateMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
-            ChessPosition target_position = move.getEndPosition();
-
-            ChessPiece target_piece = board.getPiece(target_position);
-
-            board.addPiece(target_position, piece);
-            board.addPiece(move.getStartPosition(), null);
-
-            boolean stillInCheck = isInCheck(piece.getTeamColor());
-            board.addPiece(startPosition, piece);
-            board.addPiece(target_position, target_piece);
+            boolean stillInCheck = simulate_moves(move, piece, startPosition);
             if (!stillInCheck) {
                 validateMoves.add(move);
             }
         }
         return validateMoves;
 
+    }
+
+    private boolean simulate_moves(ChessMove move, ChessPiece piece, ChessPosition startPosition) {
+        ChessPosition target_position = move.getEndPosition();
+
+        ChessPiece target_piece = board.getPiece(target_position);
+
+        board.addPiece(target_position, piece);
+        board.addPiece(move.getStartPosition(), null);
+
+        boolean stillInCheck = isInCheck(piece.getTeamColor());
+        board.addPiece(startPosition, piece);
+        board.addPiece(target_position, target_piece);
+
+        return stillInCheck;
 
     }
 
 
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        /**
+        /*
          * Makes a move in a chess game
          *
          * @param move chess move to preform
@@ -132,7 +136,7 @@ public class ChessGame {
 
 
     public boolean isInCheck(TeamColor teamColor) {
-        /**
+        /*
          * Determines if the given team is in check
          *
          * @param teamColor which team to check for check
@@ -156,14 +160,20 @@ public class ChessGame {
 
                 if (current_piece != null && current_piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> current_piece_moves = current_piece.pieceMoves(board, current_position);
+
+                    //Check if it's a Pawn
                     if (current_piece.getPieceType() == ChessPiece.PieceType.PAWN) {
                         Collection<ChessPosition> end_positions = if_pawn_could_captured(current_position, direction);
+
+
                         for (ChessPosition position : end_positions) {
+
                             if (position == kingsPosition) {
                                 return true;
                             }
                         }
                     }
+
                     for (ChessMove move : current_piece_moves) {
 
                         if (move.getEndPosition().equals(kingsPosition)) {
@@ -178,8 +188,9 @@ public class ChessGame {
         return false;
     }
 
+
     private ChessPosition findKing(TeamColor teamColor) {
-        /** Looks for the king in the board **/
+        /* Looks for the king in the board */
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
@@ -196,7 +207,7 @@ public class ChessGame {
     }
 
     private Collection<ChessPosition> if_pawn_could_captured(ChessPosition position, int direction) {
-        /** Simulates the moves a pawn will do if it could capture **/
+        /* Simulates the moves a pawn will do if it could capture **/
 
         Collection<ChessPosition> endPositions = new ArrayList<>();
         int[][] diagonal_directions = {{direction, 1}, {direction, -1}};
@@ -216,13 +227,13 @@ public class ChessGame {
 
 
     boolean inBounds(int row, int col) {
-        /** Makes sure that calculations are being done inside the limits of the board**/
+        /* Makes sure that calculations are being done inside the limits of the board**/
         return row < 9 && row > 0 && col > 0 && col < 9;
     }
 
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        /**
+        /*
          * Determines if the given team is in checkmate
          *
          * @param teamColor which team to check for checkmate
@@ -237,7 +248,7 @@ public class ChessGame {
     }
 
     private boolean checkMate(TeamColor teamColor) {
-        /** isInCheckmate and isInStalemate use this function to check if the king is surrounded by danger **/
+        /* isInCheckmate and isInStalemate use this function to check if the king is surrounded by danger **/
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
@@ -248,16 +259,7 @@ public class ChessGame {
                 if (myCurrentPiece != null && myCurrentPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> myPieceMoves = myCurrentPiece.pieceMoves(board, myCurrentPosition);
                     for (ChessMove move : myPieceMoves) {
-                        ChessPosition target_position = move.getEndPosition();
-
-                        ChessPiece target_piece = board.getPiece(target_position);
-
-                        board.addPiece(target_position, myCurrentPiece);
-                        board.addPiece(move.getStartPosition(), null);
-
-                        boolean stillInCheck = isInCheck(teamColor);
-                        board.addPiece(myCurrentPosition, myCurrentPiece);
-                        board.addPiece(target_position, target_piece);
+                        boolean stillInCheck = simulate_moves(move, myCurrentPiece, myCurrentPosition);
                         if (!stillInCheck) {
                             return false;
                         }
@@ -272,7 +274,7 @@ public class ChessGame {
 
 
     public boolean isInStalemate(TeamColor teamColor) {
-        /**
+        /*
          * Determines if the given team is in stalemate, which here is defined as having
          * no valid moves
          *
@@ -291,7 +293,7 @@ public class ChessGame {
 
 
     public void setBoard(ChessBoard board) {
-        /**
+        /*
          * Sets this game's chessboard with a given board
          *
          * @param board the new board to use
@@ -303,7 +305,7 @@ public class ChessGame {
 
 
     public ChessBoard getBoard() {
-        /**
+        /*
          * Gets the current chessboard
          *
          * @return the chessboard
