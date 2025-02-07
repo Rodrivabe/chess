@@ -73,7 +73,7 @@ public class ChessPiece {
                 return new KnightMovesCalculator();
             default:
                 try {
-                    throw new InvalidMoveException("Invalid Move");
+                    throw new InvalidMoveException("Invalid Piece Type");
                 } catch (InvalidMoveException e) {
                     throw new RuntimeException(e);
                 }
