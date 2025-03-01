@@ -18,14 +18,15 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     public GameData getGame(int gameID) {
-        return null;
+        return games.get(gameID);
     }
 
     public Collection<GameData> listGames() {
         return games.values();
     }
 
-    public void updateGame(String gameID, GameData updatedGame) {
+    public void updateGame(int gameID, GameData updatedGame) {
+        games.put(gameID, updatedGame);
 
     }
 
