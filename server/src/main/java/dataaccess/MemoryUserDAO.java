@@ -2,21 +2,28 @@ package dataaccess;
 
 import model.UserData;
 
+import java.util.HashMap;
+
 public class MemoryUserDAO implements UserDAO{
+    final private HashMap<String, UserData> users = new HashMap<>();
 
-    public void insertUser(UserData user) throws DataAccessException {
+    public UserData insertUser(UserData user) {
+        user = new UserData(user.username(), user.password(), user.email());
 
+        users.put(user.username(), user);
+        return user;
     }
 
-    public UserData getUser(String username) throws DataAccessException {
-        return null;
+    public UserData getUser(String username) {
+
+        return users.get(username);
     }
 
-    public void deleteUser(UserData user) throws DataAccessException {
-
+    public void deleteUser(String username) {
+        users.remove(username);
     }
 
-    public void clear() {
+    public void deleteAllUsers() {
 
     }
 }
