@@ -7,7 +7,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
 
     public AuthData insertAuth(AuthData authdata) throws DataAccessException {
-
+        return null;
     }
 
 
