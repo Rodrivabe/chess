@@ -1,14 +1,9 @@
 package dataaccess;
 
-
 import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,79 +11,82 @@ class UserDAOTest {
 
     private UserDAO getDataAccess(Class<? extends UserDAO> databaseClass) throws ResponseException {
         UserDAO db;
-
         db = new MemoryUserDAO();
-
         db.deleteAllUsers();
         return db;
     }
 
     @ParameterizedTest
     @ValueSource(classes = {MemoryUserDAO.class})
-    void addUser(Class<? extends UserDAO> dbClass) throws ResponseException {
+    void insertUser(Class<? extends UserDAO> dbClass) throws ResponseException {
         UserDAO dataAccess = getDataAccess(dbClass);
 
         var user = new UserData("juanito", "juanitoiscool12", "juanito@gmail.com");
         assertDoesNotThrow(() -> dataAccess.insertUser(user));
     }
 
-     @ParameterizedTest
+    @ParameterizedTest
     @ValueSource(classes = {MemoryUserDAO.class})
-    void listPets(Class<? extends UserDAO> dbClass) throws ResponseException {
-         UserDAO dataAccess = getDataAccess(dbClass);
+    void getUser(Class<? extends UserDAO> dbClass) throws ResponseException, DataAccessException {
+        UserDAO dataAccess = getDataAccess(dbClass);
 
-        List<UserData> expected = new ArrayList<>();
-        expected.add(dataAccess.addPet(new Pet(0, "joe", PetType.FISH)));
-        expected.add(dataAccess.addPet(new Pet(0, "sally", PetType.CAT)));
-        expected.add(dataAccess.addPet(new Pet(0, "fido", PetType.DOG)));
+        var expectedUser = new UserData("juanito", "juanitoiscool12", "juanito@gmail.com");
+        dataAccess.insertUser(expectedUser);
 
-        var actual = dataAccess.listPets();
-        assertPetCollectionEqual(expected, actual);
-    }
-    /**
-    @ParameterizedTest
-    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
-    void deletePet(Class<? extends DataAccess> dbClass) throws ResponseException {
-        DataAccess dataAccess = getDataAccess(dbClass);
+        var actualUser = dataAccess.getUser("juanito");
 
-        List<Pet> expected = new ArrayList<>();
-        var deletePet = dataAccess.addPet(new Pet(0, "joe", PetType.FISH));
-        expected.add(dataAccess.addPet(new Pet(0, "sally", PetType.CAT)));
-        expected.add(dataAccess.addPet(new Pet(0, "fido", PetType.DOG)));
-
-        dataAccess.deletePet(deletePet.id());
-
-        var actual = dataAccess.listPets();
-        assertPetCollectionEqual(expected, actual);
+        assertNotNull(actualUser, "User should be found.");
+        assertUserEqual(expectedUser, actualUser);
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MySqlDataAccess.class, MemoryDataAccess.class})
-    void deleteAllPets(Class<? extends DataAccess> dbClass) throws Exception {
-        DataAccess dataAccess = getDataAccess(dbClass);
+    @ValueSource(classes = {MemoryUserDAO.class})
+    void updateUser(Class<? extends UserDAO> dbClass) throws ResponseException, DataAccessException {
+        UserDAO dataAccess = getDataAccess(dbClass);
 
-        dataAccess.addPet(new Pet(0, "joe", PetType.FISH));
-        dataAccess.addPet(new Pet(0, "sally", PetType.CAT));
+        var user = new UserData("juanito", "juanitoiscool12", "juanito@gmail.com");
+        dataAccess.insertUser(user);
 
-        dataAccess.deleteAllPets();
+        var updatedUser = new UserData("juanito", "newpassword123", "newjuanito@gmail.com");
+        dataAccess.updateUser(updatedUser.username(), updatedUser);
 
-        var actual = dataAccess.listPets();
-        assertEquals(0, actual.size());
+        var actualUser = dataAccess.getUser("juanito");
+
+        assertNotNull(actualUser, "User should still exist after update.");
+        assertUserEqual(updatedUser, actualUser);
     }
 
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryUserDAO.class})
+    void deleteUser(Class<? extends UserDAO> dbClass) throws ResponseException, DataAccessException {
+        UserDAO dataAccess = getDataAccess(dbClass);
 
-    public static void assertPetEqual(Pet expected, Pet actual) {
-        assertEquals(expected.name(), actual.name());
-        assertEquals(expected.type(), actual.type());
+        var user = new UserData("juanito", "juanitoiscool12", "juanito@gmail.com");
+        dataAccess.insertUser(user);
+
+        dataAccess.deleteUser("juanito");
+
+        var actualUser = dataAccess.getUser("juanito");
+        assertNull(actualUser, "User should be deleted.");
     }
 
-    public static void assertPetCollectionEqual(Collection<Pet> expected, Collection<Pet> actual) {
-        Pet[] actualList = actual.toArray(new Pet[]{});
-        Pet[] expectedList = expected.toArray(new Pet[]{});
-        assertEquals(expectedList.length, actualList.length);
-        for (var i = 0; i < actualList.length; i++) {
-            assertPetEqual(expectedList[i], actualList[i]);
-        }
+    @ParameterizedTest
+    @ValueSource(classes = {MemoryUserDAO.class})
+    void deleteAllUsers(Class<? extends UserDAO> dbClass) throws ResponseException, DataAccessException {
+        UserDAO dataAccess = getDataAccess(dbClass);
+
+        dataAccess.insertUser(new UserData("juanito", "juanitoiscool12", "juanito@gmail.com"));
+        dataAccess.insertUser(new UserData("pablo", "pablopassword", "pablo@gmail.com"));
+
+        dataAccess.deleteAllUsers();
+
+        assertNull(dataAccess.getUser("juanito"), "User 'juanito' should be deleted.");
+        assertNull(dataAccess.getUser("pablo"), "User 'pablo' should be deleted.");
     }
-    **/
+
+    public static void assertUserEqual(UserData expected, UserData actual) {
+        assertEquals(expected.username(), actual.username());
+        assertEquals(expected.password(), actual.password());
+        assertEquals(expected.email(), actual.email());
+    }
 }
