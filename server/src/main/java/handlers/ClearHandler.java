@@ -8,9 +8,16 @@ import spark.Spark;
 
 public class ClearHandler {
 
+    LoginRequest request = (LoginRequest)gson.fromJson(reqData, LoginRequest.class);
+
+    LoginService service = new LoginService();
+    LoginResult result = service.login(request);
+
+    return gson.toJson(result);
+
+
 
     private Object deleteAllUsers(Request req, Response res) throws ResponseException {
-        UserService userService = new UserService();
         userService.deleteAllUsers();
         res.status(204);
         return "";

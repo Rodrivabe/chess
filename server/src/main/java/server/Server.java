@@ -23,7 +23,7 @@ public class Server {
         UserDAO UserData = new MemoryUserDAO();
 
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/pet", this::deleteAllPets);
+        Spark.delete("/user", this::deleteAllUsers);
         Spark.delete("/user", (req, res) -> (new ClearHandler()).handleRequest(req, res));
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
