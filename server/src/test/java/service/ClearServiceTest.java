@@ -8,5 +8,5 @@ public class ClearServiceTest {
 
     @BeforeEach
     void clear() throws ResponseException {
-        service.deleteAllPets();
+        clear.deleteAllPets();
 }

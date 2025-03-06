@@ -1,26 +1,36 @@
 package handlers;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
+import results.ClearResult;
+import service.ClearService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 
 public class ClearHandler {
+    private final ClearService clearService;
+    private final Gson gson;
 
-    LoginRequest request = (LoginRequest)gson.fromJson(reqData, LoginRequest.class);
-
-    LoginService service = new LoginService();
-    LoginResult result = service.login(request);
-
-    return gson.toJson(result);
-
-
-
-    private Object deleteAllUsers(Request req, Response res) throws ResponseException {
-        userService.deleteAllUsers();
-        res.status(204);
-        return "";
+    public ClearHandler(ClearService clearService) {
+        this.clearService = clearService;
+        this.gson = new Gson();
     }
+
+    @Override
+    public Object handleRequest(Request req, Response res) {
+        ClearResult result = clearService.clearDatabase();
+
+        if (result.isSuccess()) {
+            res.status(200);
+        } else {
+            res.status(500);
+        }
+
+        res.type("application/json");
+        return gson.toJson(result);
+    }
+
 
 }
