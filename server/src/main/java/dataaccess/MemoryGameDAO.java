@@ -34,7 +34,7 @@ public class MemoryGameDAO implements GameDAO{
         games.remove(gameID);
     }
 
-    public void deleteAllG() {
+    public void deleteAllGames() {
         games.clear();
 
     }

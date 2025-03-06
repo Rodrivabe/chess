@@ -6,13 +6,21 @@ import dataaccess.UserDAO;
 import results.ClearResult;
 
 public class ClearService {
-    private final DataAccessObject dao;
+    private final UserDAO userDAO;
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
 
-    public ClearService(DataAccessObject dao) {
-        this.dao = dao;
+    public  ClearService(AuthDAO authDAO, UserDAO userDAO, GameDAO gameDAO){
+        this.userDAO = userDAO;
+        this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
+
+
+
+    }
+    public ClearResult clearDatabase(){
+        return null;
     }
 
-    public void clear() throws DataAccessException {
-        dao.clearAll(); // Calls the DAO's method to clear all data
-    }
+
 }

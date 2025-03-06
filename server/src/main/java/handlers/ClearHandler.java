@@ -18,12 +18,12 @@ public class ClearHandler {
         this.gson = new Gson();
     }
 
-    @Override
     public Object handleRequest(Request req, Response res) {
         ClearResult result = clearService.clearDatabase();
 
         if (result.isSuccess()) {
             res.status(200);
+
         } else {
             res.status(500);
         }

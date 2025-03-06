@@ -27,7 +27,7 @@ public class MemoryUserDAO implements UserDAO{
         users.remove(username);
     }
 
-    public void deleteAll() {
+    public void deleteAllUsers() {
         users.clear();
     }
 }
