@@ -3,7 +3,7 @@ package results;
 public class ClearResult {
     private final boolean success;
 
-    public ClearResult(boolean success, String message) {
+    public ClearResult(boolean success) {
         this.success = success;
     }
 

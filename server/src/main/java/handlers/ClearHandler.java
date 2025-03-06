@@ -1,13 +1,10 @@
 package handlers;
 
 import com.google.gson.Gson;
-import exception.ResponseException;
 import results.ClearResult;
 import service.ClearService;
-import service.UserService;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 
 public class ClearHandler {
     private final ClearService clearService;
@@ -23,13 +20,14 @@ public class ClearHandler {
 
         if (result.isSuccess()) {
             res.status(200);
+            return "{}";
 
         } else {
             res.status(500);
+            res.type("application/json");
+            return gson.toJson(result);
         }
 
-        res.type("application/json");
-        return gson.toJson(result);
     }
 
 

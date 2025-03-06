@@ -15,11 +15,18 @@ public class ClearService {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
 
-
-
     }
     public ClearResult clearDatabase(){
-        return null;
+
+        try {
+            userDAO.deleteAllUsers();
+            gameDAO.deleteAllGames();
+            authDAO.deleteAllAuthTokens();
+            return new ClearResult(true);
+        }catch (Exception e){
+            return new ClearResult(false);
+        }
+
     }
 
 

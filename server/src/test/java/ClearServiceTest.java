@@ -1,0 +1,54 @@
+import dataaccess.*;
+import model.AuthData;
+import model.GameData;
+import model.UserData;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import service.AuthService;
+import service.ClearService;
+import service.GameService;
+import service.UserService;
+
+class ClearServiceTest {
+    private AuthDAO AuthDao;
+    private GameDAO GameDao;
+    private UserDAO UserDao;
+    private ClearService clearService;
+    private UserService userService;
+    private GameService gameService;
+    private AuthService authService;
+
+
+    @BeforeEach
+    void createDAOS() throws DataAccessException {
+        AuthDao = new MemoryAuthDAO();
+        GameDao = new MemoryGameDAO();
+        UserDao = new MemoryUserDAO();
+        clearService = new ClearService(AuthDao, UserDao, GameDao);
+        userService = new UserService(UserDao);
+        gameService = new GameService(GameDao);
+        authService = new AuthService(AuthDao);
+    }
+
+    @Test
+    void clearDatabase() throws DataAccessException {
+
+        UserDao.insertUser(new UserData("player1", "password", "heyyou@byu.edu"));
+        UserDao.insertUser(new UserData("player2", "password", "heyyoutwo@byu.edu"));
+        GameDao.insertGame(new GameData(1, "player1", "player2", "Te vas a morir", new chess.ChessGame()));
+        AuthDao.insertAuth(new AuthData("authToken1", "rodrivabe"));
+
+        assertNotNull(UserDao.getUser("player1"));
+        assertNotNull(AuthDao.getAuth("authToken1"));
+        assertNotNull(GameDao.getGame(1));
+
+
+        clearService.clearDatabase();
+
+        assertEquals(0, userService.listUsers().size());
+        assertEquals(0, gameService.listGames().size());
+        assertEquals(0, authService.listAuths().size());
+    }
+}
