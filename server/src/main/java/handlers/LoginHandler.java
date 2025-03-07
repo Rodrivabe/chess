@@ -9,11 +9,11 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-public class RegisterHandler extends HandlerBase implements Route {
+public class LoginHandler extends HandlerBase implements Route {
     private final UserService userService;
     private final Gson gson = new Gson();
 
-    public RegisterHandler(UserService userService) {
+    public LoginHandler(UserService userService) {
         this.userService = userService;
     }
 
@@ -35,13 +35,3 @@ public class RegisterHandler extends HandlerBase implements Route {
     }
 
 }
-
-
-/**
- * LoginRequest request = (LoginRequest)gson.fromJson(reqData, LoginRequest.class);
- * <p>
- * LoginService service = new LoginService();
- * LoginResult result = service.login(request);
- * <p>
- * return gson.toJson(result);
- */

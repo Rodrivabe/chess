@@ -9,7 +9,7 @@ import java.util.UUID;
 public class MemoryAuthDAO implements AuthDAO {
     final private HashMap<String, AuthData> authTokens = new HashMap<>();
 
-    public AuthData insertAuth(AuthData authdata) {
+    public AuthData insertAuth(AuthData authdata){
         authTokens.put(authdata.authToken(), authdata);
         return authdata;
     }
@@ -37,4 +37,5 @@ public class MemoryAuthDAO implements AuthDAO {
     public void deleteAllAuthTokens() {
         authTokens.clear();
     }
+
 }

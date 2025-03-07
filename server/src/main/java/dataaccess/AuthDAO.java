@@ -20,5 +20,4 @@ public interface AuthDAO {
 
     void deleteAllAuthTokens() throws DataAccessException;
 
-    void insertAuth(String authToken, String username);
 }

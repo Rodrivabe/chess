@@ -28,7 +28,7 @@ class ClearServiceTest {
         GameDao = new MemoryGameDAO();
         UserDao = new MemoryUserDAO();
         clearService = new ClearService(AuthDao, UserDao, GameDao);
-        userService = new UserService(UserDao);
+        userService = new UserService(AuthDao, UserDao);
         gameService = new GameService(GameDao);
         authService = new AuthService(AuthDao);
     }

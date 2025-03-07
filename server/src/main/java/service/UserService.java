@@ -7,11 +7,9 @@ import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import requests.RegisterRequest;
-import results.LoginResult;
 import results.RegisterResult;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class UserService {
     private final AuthDAO authDAO;
@@ -34,7 +32,7 @@ public class UserService {
         try {
             UserData user = userDAO.getUser(registerRequest.username());
             if (user != null) {
-                throw new ResponseException(400, "Error: already taken");
+                throw new ResponseException(403, "Error: already taken");
             }
             UserData newUser = new UserData(registerRequest.username(), registerRequest.password(),
                     registerRequest.email());
@@ -55,12 +53,14 @@ public class UserService {
     }
 
 
-
+/**
     public LoginResult login(LoginRequest loginRequest) {
     }
 
     public void logout(LogoutRequest logoutRequest) {
     }
+
+ **/
 
     public UserData insertUser(UserData user) throws DataAccessException {
         return userDAO.insertUser(user);
