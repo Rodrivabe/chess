@@ -2,22 +2,24 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.UserDAO;
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.security.LoginService;
 import requests.LoginRequest;
-import requests.RegisterRequest;
 import results.LoginResult;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class AuthService {
 
     private final AuthDAO authDAO;
+    private final UserDAO userDAO;
 
-    public AuthService(AuthDAO authDAO) {
+    public AuthService(AuthDAO authDAO, UserDAO userDAO) {
         this.authDAO = authDAO;
+        this.userDAO = userDAO;
     }
 
     public Collection<AuthData> listAuths() throws DataAccessException {
@@ -28,26 +30,20 @@ public class AuthService {
 
 
         if (loginRequest.username() == null || loginRequest.username().isBlank() ||
-                loginRequest.password() == null || loginRequest.password().isBlank() ||
-                loginRequest.email() == null || loginRequest.email().isBlank()) {
+                loginRequest.password() == null || loginRequest.password().isBlank()) {
             throw new ResponseException(400, "Error: bad request");
 
         }
         try {
             UserData user = userDAO.getUser(loginRequest.username());
-            if (user != null) {
-                throw new ResponseException(403, "Error: already taken");
+            if (user == null || !Objects.equals(user.password(), loginRequest.password())) {
+                throw new ResponseException(401, "Error: unauthorized");
             }
-            UserData newUser = new UserData(loginRequest.username(), loginRequest.password(),
-                    loginRequest.email());
-
-            userDAO.insertUser(newUser);
             String authToken = authDAO.generateAuthToken();
-            AuthData newAuth = new AuthData(authToken, newUser.username());
+            AuthData newAuth = new AuthData(authToken, user.username());
             authDAO.insertAuth(newAuth);
 
-
-            LoginResult result = new LoginResult(newUser.username(), newAuth.authToken());
+            LoginResult result = new LoginResult(user.username(), newAuth.authToken());
 
             return result;
         } catch (DataAccessException e) {
