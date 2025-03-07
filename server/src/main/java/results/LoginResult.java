@@ -1,3 +1,4 @@
 package results;
 
-record LoginResult(String username, String authToken) {}
+record LoginResult(String username, String authToken) {
+}

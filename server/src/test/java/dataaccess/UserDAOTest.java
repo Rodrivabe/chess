@@ -9,6 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserDAOTest {
 
+    public static void assertUserEqual(UserData expected, UserData actual) {
+        assertEquals(expected.username(), actual.username());
+        assertEquals(expected.password(), actual.password());
+        assertEquals(expected.email(), actual.email());
+    }
+
     private UserDAO getDataAccess(Class<? extends UserDAO> databaseClass) throws ResponseException {
         UserDAO db;
         db = new MemoryUserDAO();
@@ -82,11 +88,5 @@ class UserDAOTest {
 
         assertNull(dataAccess.getUser("juanito"), "User 'juanito' should be deleted.");
         assertNull(dataAccess.getUser("pablo"), "User 'pablo' should be deleted.");
-    }
-
-    public static void assertUserEqual(UserData expected, UserData actual) {
-        assertEquals(expected.username(), actual.username());
-        assertEquals(expected.password(), actual.password());
-        assertEquals(expected.email(), actual.email());
     }
 }

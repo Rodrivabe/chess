@@ -4,12 +4,13 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import service.AuthService;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ClearServiceTest {
     private AuthDAO AuthDao;

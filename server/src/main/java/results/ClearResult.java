@@ -7,7 +7,7 @@ public class ClearResult {
         this.success = success;
     }
 
-    public boolean isSuccess(){
+    public boolean isSuccess() {
         return success;
 
     }

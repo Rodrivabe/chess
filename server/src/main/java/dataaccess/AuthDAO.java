@@ -13,9 +13,12 @@ public interface AuthDAO {
     Collection<AuthData> listAuths() throws DataAccessException;
 
 
+    public String generateAuthToken() throws DataAccessException;
+
 
     void deleteAuth(AuthData authData) throws DataAccessException;
 
-    void deleteAllAuthTokens();
+    void deleteAllAuthTokens() throws DataAccessException;
 
+    void insertAuth(String authToken, String username);
 }

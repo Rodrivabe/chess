@@ -1,11 +1,10 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
-
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     final private HashMap<String, AuthData> authTokens = new HashMap<>();
@@ -20,12 +19,18 @@ public class MemoryAuthDAO implements AuthDAO {
         return authTokens.get(authToken);
     }
 
-    public Collection<AuthData> listAuths(){
+    public Collection<AuthData> listAuths() {
         return authTokens.values();
     }
 
+    public String generateAuthToken() {
+        String authToken = UUID.randomUUID().toString();
 
-    public void deleteAuth(AuthData authData) throws DataAccessException {
+        return authToken;
+    }
+
+
+    public void deleteAuth(AuthData authData) {
         authTokens.remove(authData.authToken());
     }
 

@@ -1,14 +1,11 @@
 import dataaccess.*;
-import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import requests.RegisterRequest;
 import results.RegisterResult;
-import service.AuthService;
 import service.UserService;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class RegisterServiceTest {
     private AuthDAO authDao;

@@ -1,14 +1,13 @@
 package handlers;
 
 import com.google.gson.Gson;
+import exception.ResponseException;
 import requests.RegisterRequest;
 import results.RegisterResult;
 import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import javax.imageio.spi.RegisterableService;
 
 public class RegisterHandler extends HandlerBase implements Route {
     private final UserService userService;
@@ -22,22 +21,26 @@ public class RegisterHandler extends HandlerBase implements Route {
     @Override
     public Object handle(Request req, Response res) {
         RegisterRequest request = gson.fromJson(req.body(), RegisterRequest.class);
-        RegisterResult result = userService.register(request);
+        try {
+            RegisterResult result = userService.register(request);
+            return result;
+        } catch (ResponseException e) {
+            return new ResponseException(e.StatusCode(), e.getMessage());
+        }
 
         //If user i
 
     }
 
     public
-
 }
 
 
 /**
  * LoginRequest request = (LoginRequest)gson.fromJson(reqData, LoginRequest.class);
- *
+ * <p>
  * LoginService service = new LoginService();
  * LoginResult result = service.login(request);
- *
+ * <p>
  * return gson.toJson(result);
  */

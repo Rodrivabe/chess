@@ -5,10 +5,9 @@ import model.GameData;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class MemoryGameDAO implements GameDAO{
-    private int nextId = 1;
+public class MemoryGameDAO implements GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
-
+    private int nextId = 1;
 
     public GameData insertGame(GameData game) {
         game = new GameData(nextId++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
@@ -30,7 +29,7 @@ public class MemoryGameDAO implements GameDAO{
 
     }
 
-    public void deleteGame(int gameID){
+    public void deleteGame(int gameID) {
         games.remove(gameID);
     }
 

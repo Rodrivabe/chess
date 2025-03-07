@@ -6,7 +6,7 @@ import service.ClearService;
 import spark.Request;
 import spark.Response;
 
-public class ClearHandler implements BaseHandler{
+public class ClearHandler implements BaseHandler {
     private final ClearService clearService;
     private final Gson gson;
 
