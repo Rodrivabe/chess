@@ -23,8 +23,10 @@ public class CreateGameHandler implements Route {
     @Override
     public Object handle(Request req, Response res) {
         CreateGameRequest request = gson.fromJson(req.body(), CreateGameRequest.class);
+
         try {
-            CreateGameResult result = gameService.createGame(request);
+            String authToken = req.headers("authorization");
+            CreateGameResult result = gameService.createGame(request, authToken);
             res.status(200);
             return gson.toJson(result);
 
@@ -35,3 +37,4 @@ public class CreateGameHandler implements Route {
         }
 
     }
+}

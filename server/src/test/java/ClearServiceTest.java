@@ -31,7 +31,7 @@ class ClearServiceTest {
         clearService = new ClearService(AuthDao, UserDao, GameDao);
         userService = new UserService(AuthDao, UserDao);
         authService = new AuthService(AuthDao, UserDao);
-        gameService = new GameService(GameDao);
+        gameService = new GameService(AuthDao, GameDao);
 
     }
 
@@ -51,7 +51,7 @@ class ClearServiceTest {
         clearService.clearDatabase();
 
         assertEquals(0, userService.listUsers().size());
-        assertEquals(0, gameService.listGames().size());
+        assertEquals(0, gameService.listGames(AuthDao.generateAuthToken()).size());
         assertEquals(0, authService.listAuths().size());
     }
 }

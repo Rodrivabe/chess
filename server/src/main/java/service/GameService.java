@@ -1,56 +1,55 @@
 package service;
 
+import chess.ChessGame;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import exception.ResponseException;
-import model.AuthData;
+import handlers.HandlerBase;
 import model.GameData;
-import model.UserData;
 import requests.CreateGameRequest;
-import requests.RegisterRequest;
 import results.CreateGameResult;
-import results.RegisterResult;
+import results.ListGamesResult;
 
 import java.util.Collection;
 
-public class GameService {
+public class GameService extends HandlerBase {
 
     private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
 
-    public GameService(GameDAO gameDAO) {
+    public GameService(AuthDAO authDAO,GameDAO gameDAO) {
         this.gameDAO = gameDAO;
+        this.authDAO = authDAO;
     }
 
-    public Collection<GameData> listGames() throws DataAccessException {
-        return gameDAO.listGames();
+    public ListGamesResult listGames(String authToken) throws ResponseException {
+        verifyAuthToken(authDAO, authToken);
+
+        ListGamesResult listGamesResult = new ListGamesResult(gameDAO.listGames());
+
+        return  listGamesResult;
 
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws ResponseException {
 
+        verifyAuthToken(authDAO, authToken);
 
         if (createGameRequest.gameName() == null || createGameRequest.gameName().isBlank()) {
             throw new ResponseException(400, "Error: bad request");
 
         }
         try {
-            UserData user = GameDAO.getGame(createGameRequest.username());
-            if (user != null) {
-                throw new ResponseException(403, "Error: already taken");
-            }
-            UserData newUser = new UserData(registerRequest.username(), registerRequest.password(),
-                    registerRequest.email());
 
-            userDAO.insertUser(newUser);
-            String authToken = authDAO.generateAuthToken();
-            AuthData newAuth = new AuthData(authToken, newUser.username());
-            authDAO.insertAuth(newAuth);
+            GameData newGame = new GameData(gameDAO.generateGameID(), null, null, createGameRequest.gameName(), new ChessGame());
 
+            gameDAO.insertGame(newGame);
 
-            RegisterResult result = new RegisterResult(newUser.username(), newAuth.authToken());
+            CreateGameResult result = new CreateGameResult(newGame.gameID());
 
             return result;
-        } catch (DataAccessException e) {
+        } catch (ResponseException e) {
             throw new ResponseException(500, "Error: "+ e.getMessage());
         }
 

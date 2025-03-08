@@ -1,12 +1,10 @@
 package server;
 
 import dataaccess.*;
-import handlers.ClearHandler;
-import handlers.LoginHandler;
-import handlers.LogoutHandler;
-import handlers.RegisterHandler;
+import handlers.*;
 import service.AuthService;
 import service.ClearService;
+import service.GameService;
 import service.UserService;
 import spark.Spark;
 
@@ -30,6 +28,7 @@ public class Server {
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
         UserService userService = new UserService(authDAO, userDAO);
         AuthService authService = new AuthService(authDAO, userDAO);
+        GameService gameService = new GameService(authDAO, gameDAO);
 
         // Register your endpoints and handle exceptions here.
         //delete
@@ -40,6 +39,11 @@ public class Server {
         Spark.post("/session", new LoginHandler(userService));
         //Logout
         Spark.delete("/session", new LogoutHandler(userService));
+        //List Games
+        Spark.get("/game", new ListGamesHandler(gameService));
+        //Create Game
+        Spark.post("/game", new CreateGameHandler(gameService));
+
 
 
         //This line initializes the server and can be removed once you have a functioning endpoint

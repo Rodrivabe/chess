@@ -10,7 +10,7 @@ public class MemoryGameDAO implements GameDAO {
     private int nextId = 1;
 
     public GameData insertGame(GameData game) {
-        game = new GameData(nextId++, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+        game = new GameData(generateGameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
 
         games.put(game.gameID(), game);
         return game;
@@ -24,6 +24,10 @@ public class MemoryGameDAO implements GameDAO {
         return games.values();
     }
 
+    public int generateGameID(){
+        return nextId++;
+    }
+
     public void updateGame(int gameID, GameData updatedGame) {
         games.put(gameID, updatedGame);
 
@@ -35,6 +39,7 @@ public class MemoryGameDAO implements GameDAO {
 
     public void deleteAllGames() {
         games.clear();
+        nextId = 1;
 
     }
 
