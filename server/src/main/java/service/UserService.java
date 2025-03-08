@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exception.ResponseException;
+import handlers.HandlerBase;
 import model.AuthData;
 import model.UserData;
 import requests.LoginRequest;
@@ -16,7 +17,7 @@ import results.RegisterResult;
 import java.util.Collection;
 import java.util.Objects;
 
-public class UserService {
+public class UserService extends HandlerBase {
     private final AuthDAO authDAO;
     private final UserDAO userDAO;
 
@@ -84,13 +85,10 @@ public class UserService {
     }
 
 
-    public void logout(LogoutRequest logoutRequest) throws ResponseException {
+    public void logout(String authToken) throws ResponseException {
 
-        try{
-
-            {
-
-
+            verifyAuthToken(authDAO, authToken);
+            authDAO.deleteAuth(authToken);
     }
 
 
