@@ -2,7 +2,6 @@ package server;
 
 import dataaccess.*;
 import handlers.*;
-import service.AuthService;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -27,7 +26,6 @@ public class Server {
 
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
         UserService userService = new UserService(authDAO, userDAO);
-        AuthService authService = new AuthService(authDAO, userDAO);
         GameService gameService = new GameService(authDAO, gameDAO);
 
         // Register your endpoints and handle exceptions here.
@@ -43,6 +41,8 @@ public class Server {
         Spark.get("/game", new ListGamesHandler(gameService));
         //Create Game
         Spark.post("/game", new CreateGameHandler(gameService));
+        //
+        Spark.put("/game", new JoinGameHandler(gameService));
 
 
 

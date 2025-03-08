@@ -5,7 +5,6 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.AuthService;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -20,7 +19,6 @@ class ClearServiceTest {
     private ClearService clearService;
     private UserService userService;
     private GameService gameService;
-    private AuthService authService;
 
 
     @BeforeEach
@@ -30,7 +28,6 @@ class ClearServiceTest {
         UserDao = new MemoryUserDAO();
         clearService = new ClearService(AuthDao, UserDao, GameDao);
         userService = new UserService(AuthDao, UserDao);
-        authService = new AuthService(AuthDao, UserDao);
         gameService = new GameService(AuthDao, GameDao);
 
     }
@@ -52,6 +49,5 @@ class ClearServiceTest {
 
         assertEquals(0, userService.listUsers().size());
         assertEquals(0, gameService.listGames(AuthDao.generateAuthToken()).size());
-        assertEquals(0, authService.listAuths().size());
     }
 }
