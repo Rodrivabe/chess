@@ -1,10 +1,11 @@
+package service;
+
 import dataaccess.*;
 import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import requests.LoginRequest;
 import results.LoginResult;
-import service.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
