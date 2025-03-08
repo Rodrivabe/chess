@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import handlers.ClearHandler;
 import handlers.LoginHandler;
+import handlers.LogoutHandler;
 import handlers.RegisterHandler;
 import service.AuthService;
 import service.ClearService;
@@ -36,7 +37,9 @@ public class Server {
         //Register
         Spark.post("/user", new RegisterHandler(userService));
         //Login
-        Spark.post("/session", new LoginHandler(authService));
+        Spark.post("/session", new LoginHandler(userService));
+        //Logout
+        Spark.delete("/session", new LogoutHandler(userService));
 
 
         //This line initializes the server and can be removed once you have a functioning endpoint

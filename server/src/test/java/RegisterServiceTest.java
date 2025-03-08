@@ -14,7 +14,7 @@ class RegisterServiceTest {
     private UserService userService;
 
     @BeforeEach
-    void setup() throws DataAccessException {
+    void setup() {
         authDao = new MemoryAuthDAO();
         userDao = new MemoryUserDAO();
         userService = new UserService(authDao, userDao);
