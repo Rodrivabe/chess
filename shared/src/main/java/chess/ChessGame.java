@@ -177,7 +177,8 @@ public class ChessGame {
         return false;
     }
 
-    private boolean checkIfPawn(ChessPiece currentPiece, ChessPosition kingsPosition, ChessPosition currentPosition, int direction) {
+    private boolean checkIfPawn(ChessPiece currentPiece, ChessPosition kingsPosition,
+                                ChessPosition currentPosition, int direction) {
         if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
             Collection<ChessPosition> endPositions = ifPawnCouldCaptured(currentPosition, direction);
             for (ChessPosition position : endPositions) {
@@ -199,7 +200,8 @@ public class ChessGame {
             for (int k = 1; k < 9; k++) {
                 ChessPosition chessPosition = new ChessPosition(i, k);
                 ChessPiece currentPiece = board.getPiece(chessPosition);
-                if (currentPiece != null && currentPiece.getPieceType() == ChessPiece.PieceType.KING && currentPiece.getTeamColor() == teamColor) {
+                if (currentPiece != null && currentPiece.getPieceType() == ChessPiece.PieceType.KING &&
+                        currentPiece.getTeamColor() == teamColor) {
                     return chessPosition;
                 }
             }
