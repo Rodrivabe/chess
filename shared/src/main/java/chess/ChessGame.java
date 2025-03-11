@@ -134,7 +134,6 @@ public class ChessGame {
 
     }
 
-
     public boolean isInCheck(TeamColor teamColor) {
         /*
          * Determines if the given team is in check
@@ -143,50 +142,54 @@ public class ChessGame {
          * @return True if the specified team is in check
          */
 
-
         ChessPosition kingsPosition = findKing(teamColor);
-        int direction;
-        if (teamColor == TeamColor.WHITE) {
-            direction = -1;
-        } else {
-            direction = 1;
-        }
+        int direction = (teamColor == TeamColor.WHITE) ? -1 : 1;
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
                 ChessPosition currentPosition = new ChessPosition(i, k);
                 ChessPiece currentPiece = board.getPiece(currentPosition);
 
-
                 if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
                     Collection<ChessMove> currentPieceMoves = currentPiece.pieceMoves(board, currentPosition);
 
-                    //Check if it's a Pawn
-                    if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        Collection<ChessPosition> endPositions = ifPawnCouldCaptured(currentPosition, direction);
-
-
-                        for (ChessPosition position : endPositions) {
-
-                            if (position == kingsPosition) {
-                                return true;
-                            }
-                        }
+                    // Check if it's a Pawn
+                    if (checkIfPawn(currentPiece, kingsPosition, currentPosition, direction)) {
+                        return true;
                     }
 
-                    for (ChessMove move : currentPieceMoves) {
-
-                        if (move.getEndPosition().equals(kingsPosition)) {
-                            return true;
-                        }
+                    // Check other pieces
+                    if (checkForOtherPieces(currentPieceMoves, kingsPosition)) {
+                        return true; // If any move puts the king in check, return true
                     }
                 }
             }
-
         }
-
         return false;
     }
+
+    private boolean checkForOtherPieces(Collection<ChessMove> currentPieceMoves, ChessPosition kingsPosition) {
+        for (ChessMove move : currentPieceMoves) {
+            if (move.getEndPosition().equals(kingsPosition)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkIfPawn(ChessPiece currentPiece, ChessPosition kingsPosition, ChessPosition currentPosition, int direction) {
+        if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            Collection<ChessPosition> endPositions = ifPawnCouldCaptured(currentPosition, direction);
+            for (ChessPosition position : endPositions) {
+                if (position.equals(kingsPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
 
     private ChessPosition findKing(TeamColor teamColor) {
@@ -252,21 +255,27 @@ public class ChessGame {
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
-
                 ChessPosition myCurrentPosition = new ChessPosition(i, k);
                 ChessPiece myCurrentPiece = board.getPiece(myCurrentPosition);
 
-                if (myCurrentPiece != null && myCurrentPiece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> myPieceMoves = myCurrentPiece.pieceMoves(board, myCurrentPosition);
-                    for (ChessMove move : myPieceMoves) {
-                        boolean stillInCheck = simulateMoves(move, myCurrentPiece, myCurrentPosition);
-                        if (!stillInCheck) {
-                            return false;
-                        }
-                    }
-
+                if (!checkForCheckMate(myCurrentPiece, myCurrentPosition, teamColor)) {
+                    return false;
                 }
+            }
+        }
+        return true;
+    }
 
+    private boolean checkForCheckMate(ChessPiece myCurrentPiece, ChessPosition myCurrentPosition, TeamColor teamColor) {
+        if (myCurrentPiece == null || myCurrentPiece.getTeamColor() != teamColor) {
+            return true;
+        }
+
+        Collection<ChessMove> myPieceMoves = myCurrentPiece.pieceMoves(board, myCurrentPosition);
+        for (ChessMove move : myPieceMoves) {
+            boolean stillInCheck = simulateMoves(move, myCurrentPiece, myCurrentPosition);
+            if (!stillInCheck) {
+                return false;
             }
         }
         return true;
