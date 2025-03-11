@@ -40,7 +40,7 @@ class ListGamesServiceTest {
     }
 
     @Test
-    void listGames_success() throws ResponseException {
+    void listGamesSuccess() throws ResponseException {
         // Step 4: Call listGames and verify the number of games
         ListGamesResult result = gameService.listGames(authToken);
 
@@ -49,7 +49,7 @@ class ListGamesServiceTest {
     }
 
     @Test
-    void listGames_invalidAuthToken() {
+    void listGamesInvalidAuthToken() {
         // Step 5: Attempt to list games with an invalid authentication token
         String invalidAuthToken = "invalidToken";
 
@@ -57,7 +57,7 @@ class ListGamesServiceTest {
     }
 
     @Test
-    void listGames_noGamesAvailable() throws ResponseException {
+    void listGamesNoGamesAvailable() throws ResponseException {
         // Step 6: Clear all games and check if list is empty
         gameDao.deleteAllGames();
 

@@ -28,7 +28,7 @@ public class JoinGameHandler  implements Route {
             return "{}";
 
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
 
             return e.toJson();
         }

@@ -35,7 +35,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void loginUser_invalidPassword() throws ResponseException {
+    void loginUserInvalidPassword() throws ResponseException {
         // Register a user
         userService.register(new requests.RegisterRequest("testUser", "securePass", "test@example.com"));
 
@@ -46,7 +46,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void loginUser_nonExistentUser() {
+    void loginUserNonExistentUser() {
         // Attempt login with a username that was never registered
         LoginRequest loginRequest = new LoginRequest("nonUser", "somePass");
 

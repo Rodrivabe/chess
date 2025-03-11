@@ -29,7 +29,7 @@ public class CreateGameHandler implements Route {
             return gson.toJson(result);
 
         } catch (ResponseException e) {
-            res.status(e.StatusCode());
+            res.status(e.statusCode());
 
             return e.toJson();
         }

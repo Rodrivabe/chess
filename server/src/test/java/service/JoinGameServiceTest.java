@@ -17,8 +17,8 @@ class JoinGameServiceTest {
     private AuthDAO authDao;
     private GameDAO gameDao;
     private GameService gameService;
-    private String player1_authToken;
-    private String player2_authToken;
+    private String player1AuthToken;
+    private String player2AuthToken;
     int testGameID;
 
 
@@ -34,11 +34,11 @@ class JoinGameServiceTest {
         // Create a test user and authenticate them
         RegisterResult result1 = userService.register(new requests.RegisterRequest("player1", "password", "player1@example.com"));
         RegisterResult result2 = userService.register(new requests.RegisterRequest("player2", "password", "player2@example.com"));
-        player1_authToken = result1.authToken();
-        player2_authToken = result2.authToken();
+        player1AuthToken = result1.authToken();
+        player2AuthToken = result2.authToken();
 
         // Get authToken for the user
-        AuthData authData = authDao.getAuth(player1_authToken);
+        AuthData authData = authDao.getAuth(player1AuthToken);
         assertNotNull(authData);
 
         // Create a test game
@@ -48,16 +48,16 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGame_success() throws ResponseException {
+    void joinGameSuccess() throws ResponseException {
         // Get the player's authToken
-        AuthData authData = authDao.getAuth(player1_authToken);
+        AuthData authData = authDao.getAuth(player1AuthToken);
         assertNotNull(authData);
 
         // Create the JoinGameRequest
         JoinGameRequest request = new JoinGameRequest( WHITE, testGameID);
 
         // Call the service
-        gameService.joinGame(request, player1_authToken);
+        gameService.joinGame(request, player1AuthToken);
 
         // Assertions
         GameData updatedGame = gameDao.getGame(1);
@@ -65,29 +65,29 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGame_invalidGameID() {
-        AuthData authData = authDao.getAuth(player1_authToken);
+    void joinGameInvalidGameID() {
+        AuthData authData = authDao.getAuth(player1AuthToken);
         assertNotNull(authData);
 
         JoinGameRequest request = new JoinGameRequest(WHITE, 999);
 
-        assertThrows(ResponseException.class, () -> gameService.joinGame(request, player1_authToken));
+        assertThrows(ResponseException.class, () -> gameService.joinGame(request, player1AuthToken));
     }
 
     @Test
-    void joinGame_spotAlreadyTaken() throws ResponseException {
+    void joinGameSpotAlreadyTaken() throws ResponseException {
         // Player 1 joins as WHITE
-        AuthData authData1 = authDao.getAuth(player1_authToken);
+        AuthData authData1 = authDao.getAuth(player1AuthToken);
         assertNotNull(authData1);
         JoinGameRequest request1 = new JoinGameRequest(WHITE, testGameID);
-        gameService.joinGame(request1, player1_authToken);
+        gameService.joinGame(request1, player1AuthToken);
 
         // Player 2 tries to join the same spot
-        AuthData authData2 = authDao.getAuth(player2_authToken);
+        AuthData authData2 = authDao.getAuth(player2AuthToken);
         assertNotNull(authData2);
         JoinGameRequest request2 = new JoinGameRequest(WHITE, testGameID) ;
 
-        assertThrows(ResponseException.class, () -> gameService.joinGame(request2, player2_authToken));
+        assertThrows(ResponseException.class, () -> gameService.joinGame(request2, player2AuthToken));
     }
 
 

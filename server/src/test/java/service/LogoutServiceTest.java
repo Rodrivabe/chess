@@ -36,7 +36,7 @@ class LogoutServiceTest {
     }
 
     @Test
-    void logout_success() throws ResponseException {
+    void logoutSuccess() throws ResponseException {
         // Step 3: Log out using the auth token
         userService.logout(authToken);
 
@@ -45,7 +45,7 @@ class LogoutServiceTest {
     }
 
     @Test
-    void logout_invalidToken() {
+    void logoutInvalidToken() {
         // Step 3: Try to log out with an invalid token
         String invalidToken = "invalidAuthToken";
 

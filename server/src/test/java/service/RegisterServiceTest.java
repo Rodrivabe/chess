@@ -22,7 +22,7 @@ class RegisterServiceTest {
     }
 
     @Test
-    void registerUser_success() throws ResponseException {
+    void registerUserSuccess() throws ResponseException {
         RegisterRequest request = new RegisterRequest("newUser", "securePassword", "newuser@example.com");
         RegisterResult result = userService.register(request);
 
@@ -33,7 +33,7 @@ class RegisterServiceTest {
     }
 
     @Test
-    void registerUser_duplicateUsername() throws ResponseException {
+    void registerUserDuplicateUsername() throws ResponseException {
         RegisterRequest request1 = new RegisterRequest("existingUser", "password123", "user1@example.com");
         userService.register(request1);
 
@@ -43,7 +43,7 @@ class RegisterServiceTest {
     }
 
     @Test
-    void registerUser_invalidData() {
+    void registerUserInvalidData() {
         RegisterRequest invalidRequest = new RegisterRequest("", "", "");
 
         assertThrows(ResponseException.class, () -> userService.register(invalidRequest));

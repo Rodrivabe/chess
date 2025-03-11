@@ -36,7 +36,7 @@ class CreateGameServiceTest {
     }
 
     @Test
-    void createGame_success() throws ResponseException {
+    void createGameSuccess() throws ResponseException {
         // Step 3: Call createGame with a valid request
         CreateGameRequest request = new CreateGameRequest("Test Game");
         CreateGameResult result = gameService.createGame(request, authToken);
@@ -51,7 +51,7 @@ class CreateGameServiceTest {
     }
 
     @Test
-    void createGame_invalidAuthToken() {
+    void createGameInvalidAuthToken() {
         // Step 5: Attempt to create a game with an invalid token
         CreateGameRequest request = new CreateGameRequest("Invalid Game");
 
@@ -60,7 +60,7 @@ class CreateGameServiceTest {
     }
 
     @Test
-    void createGame_noGameName() {
+    void createGameNoGameName() {
         // Step 6: Attempt to create a game without a game name (invalid request)
         CreateGameRequest request = new CreateGameRequest("");
 
