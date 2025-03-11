@@ -8,10 +8,8 @@ import handlers.HandlerBase;
 import model.AuthData;
 import model.UserData;
 import requests.LoginRequest;
-import requests.LogoutRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
-import results.LogoutResult;
 import results.RegisterResult;
 
 import java.util.Collection;
@@ -49,9 +47,7 @@ public class UserService extends HandlerBase {
             authDAO.insertAuth(newAuth);
 
 
-            RegisterResult result = new RegisterResult(newUser.username(), newAuth.authToken());
-
-            return result;
+            return new RegisterResult(newUser.username(), newAuth.authToken());
         } catch (DataAccessException e) {
             throw new ResponseException(500, "Error: "+ e.getMessage());
         }
@@ -75,9 +71,7 @@ public class UserService extends HandlerBase {
             AuthData newAuth = new AuthData(authToken, user.username());
             authDAO.insertAuth(newAuth);
 
-            LoginResult result = new LoginResult(user.username(), newAuth.authToken());
-
-            return result;
+            return new LoginResult(user.username(), newAuth.authToken());
         } catch (DataAccessException e) {
             throw new ResponseException(500, "Error: "+ e.getMessage());
         }
@@ -103,18 +97,8 @@ public class UserService extends HandlerBase {
  **/
 
 
-
-    public UserData insertUser(UserData user) throws DataAccessException {
-        return userDAO.insertUser(user);
-    }
-
-
-    public Collection<UserData> listUsers() throws DataAccessException {
+    public Collection<UserData> listAllUsers() throws DataAccessException {
         return userDAO.listUsers();
-    }
-
-    public void deleteAllUsers() throws ResponseException {
-        userDAO.deleteAllUsers();
     }
 
 

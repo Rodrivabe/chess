@@ -46,7 +46,7 @@ class ClearServiceTest {
 
         clearService.clearDatabase();
 
-        assertEquals(0, userService.listUsers().size());
-        assertEquals(0, gameService.listGames(AuthDao.generateAuthToken()).size());
+        assertEquals(0, userService.listAllUsers().size());
+        assertEquals(0, gameService.listAllGames().size());
     }
 }

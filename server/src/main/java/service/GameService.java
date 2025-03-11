@@ -2,9 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.UserDAO;
 import exception.ResponseException;
 import handlers.HandlerBase;
 import model.AuthData;
@@ -15,9 +13,9 @@ import results.CreateGameResult;
 import results.ListGamesResult;
 
 import java.util.Collection;
-import java.util.Objects;
 
 import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
 
 public class GameService extends HandlerBase {
 
@@ -32,9 +30,7 @@ public class GameService extends HandlerBase {
     public ListGamesResult listGames(String authToken) throws ResponseException {
         verifyAuthToken(authDAO, authToken);
 
-        ListGamesResult listGamesResult = new ListGamesResult(gameDAO.listGames());
-
-        return  listGamesResult;
+        return new ListGamesResult(gameDAO.listGames());
 
     }
 
@@ -52,9 +48,7 @@ public class GameService extends HandlerBase {
 
             gameDAO.insertGame(newGame);
 
-            CreateGameResult result = new CreateGameResult(newGame.gameID());
-
-            return result;
+            return new CreateGameResult(newGame.gameID());
         } catch (ResponseException e) {
             throw new ResponseException(500, "Error: "+ e.getMessage());
         }
@@ -62,7 +56,7 @@ public class GameService extends HandlerBase {
     }
 
     public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws ResponseException {
-        String color = joinGameRequest.playerColor();
+        ChessGame.TeamColor color = joinGameRequest.playerColor();
         int gameID = joinGameRequest.gameID();
         verifyAuthToken(authDAO, authToken);
 
@@ -72,16 +66,18 @@ public class GameService extends HandlerBase {
             throw new ResponseException(400, "Error: bad request");
         }
 
-        if(!Objects.equals(color, "WHITE") || !Objects.equals(color, "BLACK")){
+        if( color != WHITE && color != BLACK){
             throw new ResponseException(400, "Error: That is not a valid color");
         }
 
-        if (Objects.equals(color, "WHITE") && game.whiteUsername() != null && !game.whiteUsername().isEmpty()) {
+        if (color == WHITE && game.whiteUsername() != null && !game.whiteUsername().isEmpty()) {
             throw new ResponseException(403, "Error: White already taken");
         }
-        if (Objects.equals(color, "Black") && game.blackUsername() != null && !game.blackUsername().isEmpty()) {
+        if (color == BLACK && game.blackUsername() != null && !game.blackUsername().isEmpty()) {
             throw new ResponseException(403, "Error: Black already taken");
         }
+
+
 
 
 
@@ -90,17 +86,26 @@ public class GameService extends HandlerBase {
             AuthData authData = authDAO.getAuth(authToken);
             String username = authData.username();
 
-            if (Objects.equals(color, "WHITE")) {
-                GameData updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-                gameDAO.updateGame(gameID, updatedGame);
-            } else if (Objects.equals(color, "BLACK")) {
-                GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-                gameDAO.updateGame(gameID, updatedGame);
+            GameData updatedGame;
+            if (color == WHITE) {
+                updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+            } else {
+                updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
             }
+            gameDAO.updateGame(gameID, updatedGame);
 
         } catch (ResponseException e) {
             throw new ResponseException(500, "Error: "+ e.getMessage());
         }
 
+
+
     }
+
+    public Collection<GameData> listAllGames() throws ResponseException {
+        return gameDAO.listGames();
+
+    }
+
+
 }

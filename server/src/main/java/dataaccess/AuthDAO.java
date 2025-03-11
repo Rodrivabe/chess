@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface AuthDAO {
 
-    AuthData insertAuth(AuthData authdata) throws DataAccessException;
+    void insertAuth(AuthData authdata) throws DataAccessException;
 
     AuthData getAuth(String authToken) throws ResponseException;
 
