@@ -163,10 +163,10 @@ public class ChessGame {
 
                     //Check if it's a Pawn
                     if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        Collection<ChessPosition> end_positions = if_pawn_could_captured(currentPosition, direction);
+                        Collection<ChessPosition> endPositions = ifPawnCouldCaptured(currentPosition, direction);
 
 
-                        for (ChessPosition position : end_positions) {
+                        for (ChessPosition position : endPositions) {
 
                             if (position == kingsPosition) {
                                 return true;
@@ -206,7 +206,7 @@ public class ChessGame {
 
     }
 
-    private Collection<ChessPosition> if_pawn_could_captured(ChessPosition position, int direction) {
+    private Collection<ChessPosition> ifPawnCouldCaptured(ChessPosition position, int direction) {
         /* Simulates the moves a pawn will do if it could capture **/
 
         Collection<ChessPosition> endPositions = new ArrayList<>();
