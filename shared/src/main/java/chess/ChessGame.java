@@ -65,7 +65,7 @@ public class ChessGame {
         Collection<ChessMove> validateMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
-            boolean stillInCheck = simulate_moves(move, piece, startPosition);
+            boolean stillInCheck = simulateMoves(move, piece, startPosition);
             if (!stillInCheck) {
                 validateMoves.add(move);
             }
@@ -74,7 +74,7 @@ public class ChessGame {
 
     }
 
-    private boolean simulate_moves(ChessMove move, ChessPiece piece, ChessPosition startPosition) {
+    private boolean simulateMoves(ChessMove move, ChessPiece piece, ChessPosition startPosition) {
         ChessPosition target_position = move.getEndPosition();
 
         ChessPiece target_piece = board.getPiece(target_position);
@@ -259,7 +259,7 @@ public class ChessGame {
                 if (myCurrentPiece != null && myCurrentPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> myPieceMoves = myCurrentPiece.pieceMoves(board, myCurrentPosition);
                     for (ChessMove move : myPieceMoves) {
-                        boolean stillInCheck = simulate_moves(move, myCurrentPiece, myCurrentPosition);
+                        boolean stillInCheck = simulateMoves(move, myCurrentPiece, myCurrentPosition);
                         if (!stillInCheck) {
                             return false;
                         }
