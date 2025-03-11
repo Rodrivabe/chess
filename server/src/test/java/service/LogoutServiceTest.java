@@ -12,14 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LogoutServiceTest {
     private AuthDAO authDao;
-    private UserDAO userDao;
     private UserService userService;
     private String authToken;
 
     @BeforeEach
-    void setup() throws DataAccessException, ResponseException {
+    void setup() throws ResponseException {
         authDao = new MemoryAuthDAO();
-        userDao = new MemoryUserDAO();
+        UserDAO userDao = new MemoryUserDAO();
         userService = new UserService(authDao, userDao);
 
         // Step 1: Register a new user

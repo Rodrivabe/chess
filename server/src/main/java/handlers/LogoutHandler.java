@@ -1,6 +1,5 @@
 package handlers;
 
-import com.google.gson.Gson;
 import exception.ResponseException;
 import service.UserService;
 import spark.Request;
@@ -9,7 +8,7 @@ import spark.Route;
 
 public class LogoutHandler  implements Route {
     private final UserService userService;
-    private final Gson gson = new Gson();
+
 
     public LogoutHandler(UserService userService) {
         this.userService = userService;

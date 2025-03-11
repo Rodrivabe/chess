@@ -1,24 +1,19 @@
 package dataaccess;
 
-import exception.ResponseException;
 import model.AuthData;
-
-import java.util.Collection;
 
 public interface AuthDAO {
 
-    void insertAuth(AuthData authdata) throws DataAccessException;
+    void insertAuth(AuthData authdata);
 
-    AuthData getAuth(String authToken) throws ResponseException;
-
-    Collection<AuthData> listAuths() throws DataAccessException;
+    AuthData getAuth(String authToken);
 
 
-    public String generateAuthToken() throws DataAccessException;
+    String generateAuthToken();
 
 
-    void deleteAuth(String authToken) throws ResponseException;
+    void deleteAuth(String authToken);
 
-    void deleteAllAuthTokens() throws DataAccessException;
+    void deleteAllAuthTokens();
 
 }

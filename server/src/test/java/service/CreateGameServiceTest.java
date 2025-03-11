@@ -13,21 +13,18 @@ import results.RegisterResult;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CreateGameServiceTest {
-    private AuthDAO authDao;
     private GameDAO gameDao;
-    private UserDAO userDao;
     private GameService gameService;
-    private UserService userService;
     private String authToken;
 
     @BeforeEach
-    void setup() throws DataAccessException, ResponseException {
-        authDao = new MemoryAuthDAO();
+    void setup() throws ResponseException {
+        AuthDAO authDao = new MemoryAuthDAO();
         gameDao = new MemoryGameDAO();
-        userDao = new MemoryUserDAO();
+        UserDAO userDao = new MemoryUserDAO();
 
         gameService = new GameService(authDao, gameDao);
-        userService = new UserService(authDao, userDao);
+        UserService userService = new UserService(authDao, userDao);
 
         // Step 1: Register a user
         RegisterRequest registerRequest = new RegisterRequest("testUser", "password", "test@example.com");

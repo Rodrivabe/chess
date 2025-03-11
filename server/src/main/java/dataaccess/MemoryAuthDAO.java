@@ -2,7 +2,6 @@ package dataaccess;
 
 import model.AuthData;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -16,10 +15,6 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public AuthData getAuth(String authToken) {
         return authTokens.get(authToken);
-    }
-
-    public Collection<AuthData> listAuths() {
-        return authTokens.values();
     }
 
     public String generateAuthToken() {

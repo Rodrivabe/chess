@@ -22,7 +22,7 @@ class RegisterServiceTest {
     }
 
     @Test
-    void registerUser_success() throws DataAccessException, ResponseException {
+    void registerUser_success() throws ResponseException {
         RegisterRequest request = new RegisterRequest("newUser", "securePassword", "newuser@example.com");
         RegisterResult result = userService.register(request);
 
@@ -33,11 +33,11 @@ class RegisterServiceTest {
     }
 
     @Test
-    void registerUser_duplicateUsername() throws DataAccessException, ResponseException {
+    void registerUser_duplicateUsername() throws ResponseException {
         RegisterRequest request1 = new RegisterRequest("existingUser", "password123", "user1@example.com");
         userService.register(request1);
 
-        RegisterRequest request2 = new RegisterRequest("existingUser", "newpassword", "user2@example.com");
+        RegisterRequest request2 = new RegisterRequest("existingUser", "new_password", "user2@example.com");
 
         assertThrows(ResponseException.class, () -> userService.register(request2));
     }

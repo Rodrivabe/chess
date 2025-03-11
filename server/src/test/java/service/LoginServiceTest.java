@@ -11,18 +11,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class LoginServiceTest {
     private AuthDAO authDao;
-    private UserDAO userDao;
     private UserService userService;
 
     @BeforeEach
     void setup() {
         authDao = new MemoryAuthDAO();
-        userDao = new MemoryUserDAO();
+        UserDAO userDao = new MemoryUserDAO();
         userService = new UserService(authDao, userDao);
     }
 
     @Test
-    void loginUser_success() throws DataAccessException, ResponseException {
+    void loginUser_success() throws ResponseException {
         // Register a user first
         userService.register(new requests.RegisterRequest("testUser", "securePass", "test@example.com"));
 
@@ -36,7 +35,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void loginUser_invalidPassword() throws DataAccessException, ResponseException {
+    void loginUser_invalidPassword() throws ResponseException {
         // Register a user
         userService.register(new requests.RegisterRequest("testUser", "securePass", "test@example.com"));
 

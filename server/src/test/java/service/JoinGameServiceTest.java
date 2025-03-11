@@ -10,29 +10,26 @@ import model.AuthData;
 import model.GameData;
 
 import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessGame.TeamColor.BLACK;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class JoinGameServiceTest {
     private AuthDAO authDao;
     private GameDAO gameDao;
-    private UserDAO userDao;
     private GameService gameService;
-    private UserService userService;
     private String player1_authToken;
     private String player2_authToken;
     int testGameID;
 
 
     @BeforeEach
-    void setup() throws DataAccessException, ResponseException {
+    void setup() throws ResponseException {
         authDao = new MemoryAuthDAO();
         gameDao = new MemoryGameDAO();
-        userDao = new MemoryUserDAO();
+        UserDAO userDao = new MemoryUserDAO();
 
         gameService = new GameService(authDao, gameDao);
-        userService = new UserService(authDao, userDao);
+        UserService userService = new UserService(authDao, userDao);
 
         // Create a test user and authenticate them
         RegisterResult result1 = userService.register(new requests.RegisterRequest("player1", "password", "player1@example.com"));
@@ -51,7 +48,7 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGame_success() throws DataAccessException, ResponseException {
+    void joinGame_success() throws ResponseException {
         // Get the player's authToken
         AuthData authData = authDao.getAuth(player1_authToken);
         assertNotNull(authData);
@@ -68,7 +65,7 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGame_invalidGameID() throws ResponseException {
+    void joinGame_invalidGameID() {
         AuthData authData = authDao.getAuth(player1_authToken);
         assertNotNull(authData);
 
@@ -78,7 +75,7 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGame_spotAlreadyTaken() throws DataAccessException, ResponseException {
+    void joinGame_spotAlreadyTaken() throws ResponseException {
         // Player 1 joins as WHITE
         AuthData authData1 = authDao.getAuth(player1_authToken);
         assertNotNull(authData1);

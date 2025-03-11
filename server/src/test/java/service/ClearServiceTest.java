@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.*;
-import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -21,7 +20,7 @@ class ClearServiceTest {
 
 
     @BeforeEach
-    void createDAOS() throws DataAccessException {
+    void createDAOS() {
         AuthDao = new MemoryAuthDAO();
         GameDao = new MemoryGameDAO();
         UserDao = new MemoryUserDAO();
@@ -32,12 +31,12 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabase() throws DataAccessException, ResponseException {
+    void clearDatabase() {
 
         UserDao.insertUser(new UserData("player1", "password", "heyyou@byu.edu"));
         UserDao.insertUser(new UserData("player2", "password", "heyyoutwo@byu.edu"));
-        GameDao.insertGame(new GameData(1, "player1", "player2", "Te vas a morir", new chess.ChessGame()));
-        AuthDao.insertAuth(new AuthData("authToken1", "rodrivabe"));
+        GameDao.insertGame(new GameData(1, "player1", "player2", "You are dead", new chess.ChessGame()));
+        AuthDao.insertAuth(new AuthData("authToken1", "hello"));
 
         assertNotNull(UserDao.getUser("player1"));
         assertNotNull(AuthDao.getAuth("authToken1"));

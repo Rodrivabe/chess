@@ -42,16 +42,12 @@ public class GameService extends HandlerBase {
             throw new ResponseException(400, "Error: bad request");
 
         }
-        try {
 
-            GameData newGame = new GameData(gameDAO.generateGameID(), null, null, createGameRequest.gameName(), new ChessGame());
+        GameData newGame = new GameData(gameDAO.generateGameID(), null, null, createGameRequest.gameName(), new ChessGame());
 
-            gameDAO.insertGame(newGame);
+        gameDAO.insertGame(newGame);
 
-            return new CreateGameResult(newGame.gameID());
-        } catch (ResponseException e) {
-            throw new ResponseException(500, "Error: "+ e.getMessage());
-        }
+        return new CreateGameResult(newGame.gameID());
 
     }
 
@@ -78,31 +74,21 @@ public class GameService extends HandlerBase {
         }
 
 
+        AuthData authData = authDAO.getAuth(authToken);
+        String username = authData.username();
 
-
-
-        try {
-
-            AuthData authData = authDAO.getAuth(authToken);
-            String username = authData.username();
-
-            GameData updatedGame;
-            if (color == WHITE) {
-                updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-            } else {
-                updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-            }
-            gameDAO.updateGame(gameID, updatedGame);
-
-        } catch (ResponseException e) {
-            throw new ResponseException(500, "Error: "+ e.getMessage());
+        GameData updatedGame;
+        if (color == WHITE) {
+            updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+        } else {
+            updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
         }
-
+        gameDAO.updateGame(gameID, updatedGame);
 
 
     }
 
-    public Collection<GameData> listAllGames() throws ResponseException {
+    public Collection<GameData> listAllGames() {
         return gameDAO.listGames();
 
     }

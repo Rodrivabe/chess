@@ -3,7 +3,6 @@ package handlers;
 import com.google.gson.Gson;
 import results.ClearResult;
 import service.ClearService;
-import spark.Request;
 import spark.Response;
 
 public class ClearHandler {
@@ -15,10 +14,10 @@ public class ClearHandler {
         this.gson = new Gson();
     }
 
-    public Object handleRequest(Request req, Response res) {
+    public Object handleRequest(Response res) {
         ClearResult result = clearService.clearDatabase();
 
-        if (result.isSuccess()) {
+        if (result.success()) {
             res.status(200);
             return "{}";
 

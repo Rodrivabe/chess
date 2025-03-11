@@ -75,16 +75,16 @@ public class ChessGame {
     }
 
     private boolean simulateMoves(ChessMove move, ChessPiece piece, ChessPosition startPosition) {
-        ChessPosition target_position = move.getEndPosition();
+        ChessPosition targetPosition = move.getEndPosition();
 
-        ChessPiece target_piece = board.getPiece(target_position);
+        ChessPiece targetPiece = board.getPiece(targetPosition);
 
-        board.addPiece(target_position, piece);
+        board.addPiece(targetPosition, piece);
         board.addPiece(move.getStartPosition(), null);
 
         boolean stillInCheck = isInCheck(piece.getTeamColor());
         board.addPiece(startPosition, piece);
-        board.addPiece(target_position, target_piece);
+        board.addPiece(targetPosition, targetPiece);
 
         return stillInCheck;
 
@@ -112,10 +112,10 @@ public class ChessGame {
             throw new InvalidMoveException("You are in Check :o ");
         }
 
-        Collection<ChessMove> validated_moves = validMoves(move.getStartPosition());
+        Collection<ChessMove> validatedMoves = validMoves(move.getStartPosition());
 
 
-        if (!validated_moves.contains(move)) {
+        if (!validatedMoves.contains(move)) {
             throw new InvalidMoveException("That's Illegal! D:");
         }
 
@@ -154,16 +154,16 @@ public class ChessGame {
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
-                ChessPosition current_position = new ChessPosition(i, k);
-                ChessPiece current_piece = board.getPiece(current_position);
+                ChessPosition currentPosition = new ChessPosition(i, k);
+                ChessPiece currentPiece = board.getPiece(currentPosition);
 
 
-                if (current_piece != null && current_piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> current_piece_moves = current_piece.pieceMoves(board, current_position);
+                if (currentPiece != null && currentPiece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> currentPieceMoves = currentPiece.pieceMoves(board, currentPosition);
 
                     //Check if it's a Pawn
-                    if (current_piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        Collection<ChessPosition> end_positions = if_pawn_could_captured(current_position, direction);
+                    if (currentPiece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        Collection<ChessPosition> end_positions = if_pawn_could_captured(currentPosition, direction);
 
 
                         for (ChessPosition position : end_positions) {
@@ -174,7 +174,7 @@ public class ChessGame {
                         }
                     }
 
-                    for (ChessMove move : current_piece_moves) {
+                    for (ChessMove move : currentPieceMoves) {
 
                         if (move.getEndPosition().equals(kingsPosition)) {
                             return true;
@@ -194,10 +194,10 @@ public class ChessGame {
 
         for (int i = 1; i < 9; i++) {
             for (int k = 1; k < 9; k++) {
-                ChessPosition current_position = new ChessPosition(i, k);
-                ChessPiece current_piece = board.getPiece(current_position);
-                if (current_piece != null && current_piece.getPieceType() == ChessPiece.PieceType.KING && current_piece.getTeamColor() == teamColor) {
-                    return current_position;
+                ChessPosition chessPosition = new ChessPosition(i, k);
+                ChessPiece currentPiece = board.getPiece(chessPosition);
+                if (currentPiece != null && currentPiece.getPieceType() == ChessPiece.PieceType.KING && currentPiece.getTeamColor() == teamColor) {
+                    return chessPosition;
                 }
             }
 
@@ -210,16 +210,16 @@ public class ChessGame {
         /* Simulates the moves a pawn will do if it could capture **/
 
         Collection<ChessPosition> endPositions = new ArrayList<>();
-        int[][] diagonal_directions = {{direction, 1}, {direction, -1}};
-        int row_position = position.getRow();
-        int col_position = position.getColumn();
-        for (int[] diagonal_position : diagonal_directions) {
-            int diagonal_row = diagonal_position[0];
-            int diagonal_col = diagonal_position[1];
-            ChessPosition target_position = new ChessPosition(row_position + diagonal_row, col_position + diagonal_col);
+        int[][] diagonalDirections = {{direction, 1}, {direction, -1}};
+        int positionRow = position.getRow();
+        int colPosition = position.getColumn();
+        for (int[] diagonalPosition : diagonalDirections) {
+            int diagonalRow = diagonalPosition[0];
+            int diagonalCol = diagonalPosition[1];
+            ChessPosition targetPosition = new ChessPosition(positionRow + diagonalRow, colPosition + diagonalCol);
 
-            if (inBounds(target_position.getRow(), target_position.getColumn())) {
-                endPositions.add(target_position);
+            if (inBounds(targetPosition.getRow(), targetPosition.getColumn())) {
+                endPositions.add(targetPosition);
             }
         }
         return endPositions;

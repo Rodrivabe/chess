@@ -1,23 +1,20 @@
 package dataaccess;
 
-import exception.ResponseException;
 import model.GameData;
 
 import java.util.Collection;
 
 public interface GameDAO {
 
-    GameData insertGame(GameData game) throws ResponseException;
+    void insertGame(GameData game);
 
-    GameData getGame(int gameID) throws ResponseException;
+    GameData getGame(int gameID);
 
-    Collection<GameData> listGames() throws ResponseException;
+    Collection<GameData> listGames();
 
-    public void updateGame(int gameID, GameData updatedGame) throws ResponseException;
+    void updateGame(int gameID, GameData updatedGame);
 
-    public void deleteGame(int gameID) throws ResponseException;
-
-    public int generateGameID() throws ResponseException;
+    int generateGameID();
 
 
     void deleteAllGames();

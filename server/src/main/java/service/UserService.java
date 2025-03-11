@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exception.ResponseException;
 import handlers.HandlerBase;
@@ -33,24 +32,20 @@ public class UserService extends HandlerBase {
             throw new ResponseException(400, "Error: bad request");
 
         }
-        try {
-            UserData user = userDAO.getUser(registerRequest.username());
-            if (user != null) {
-                throw new ResponseException(403, "Error: already taken");
-            }
-            UserData newUser = new UserData(registerRequest.username(), registerRequest.password(),
-                    registerRequest.email());
-
-            userDAO.insertUser(newUser);
-            String authToken = authDAO.generateAuthToken();
-            AuthData newAuth = new AuthData(authToken, newUser.username());
-            authDAO.insertAuth(newAuth);
-
-
-            return new RegisterResult(newUser.username(), newAuth.authToken());
-        } catch (DataAccessException e) {
-            throw new ResponseException(500, "Error: "+ e.getMessage());
+        UserData user = userDAO.getUser(registerRequest.username());
+        if (user != null) {
+            throw new ResponseException(403, "Error: already taken");
         }
+        UserData newUser = new UserData(registerRequest.username(), registerRequest.password(),
+                registerRequest.email());
+
+        userDAO.insertUser(newUser);
+        String authToken = authDAO.generateAuthToken();
+        AuthData newAuth = new AuthData(authToken, newUser.username());
+        authDAO.insertAuth(newAuth);
+
+
+        return new RegisterResult(newUser.username(), newAuth.authToken());
 
     }
 
@@ -62,19 +57,15 @@ public class UserService extends HandlerBase {
             throw new ResponseException(400, "Error: bad request");
 
         }
-        try {
-            UserData user = userDAO.getUser(loginRequest.username());
-            if (user == null || !Objects.equals(user.password(), loginRequest.password())) {
-                throw new ResponseException(401, "Error: unauthorized");
-            }
-            String authToken = authDAO.generateAuthToken();
-            AuthData newAuth = new AuthData(authToken, user.username());
-            authDAO.insertAuth(newAuth);
-
-            return new LoginResult(user.username(), newAuth.authToken());
-        } catch (DataAccessException e) {
-            throw new ResponseException(500, "Error: "+ e.getMessage());
+        UserData user = userDAO.getUser(loginRequest.username());
+        if (user == null || !Objects.equals(user.password(), loginRequest.password())) {
+            throw new ResponseException(401, "Error: unauthorized");
         }
+        String authToken = authDAO.generateAuthToken();
+        AuthData newAuth = new AuthData(authToken, user.username());
+        authDAO.insertAuth(newAuth);
+
+        return new LoginResult(user.username(), newAuth.authToken());
 
     }
 
@@ -97,7 +88,7 @@ public class UserService extends HandlerBase {
  **/
 
 
-    public Collection<UserData> listAllUsers() throws DataAccessException {
+    public Collection<UserData> listAllUsers() {
         return userDAO.listUsers();
     }
 

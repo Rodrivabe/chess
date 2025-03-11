@@ -6,15 +6,11 @@ import java.util.Collection;
 
 public interface UserDAO {
 
-    UserData insertUser(UserData user) throws DataAccessException;
+    void insertUser(UserData user);
 
-    UserData getUser(String username) throws DataAccessException;
+    UserData getUser(String username);
 
-    void deleteUser(String username) throws DataAccessException;
-
-    void updateUser(String username, UserData updatedUser);
-
-    Collection<UserData> listUsers() throws DataAccessException;
+    Collection<UserData> listUsers();
 
     void deleteAllUsers();
 

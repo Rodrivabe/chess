@@ -16,11 +16,6 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         } else {
             direction = -1;}
 
-        /** Move types
-         * 1 = move forwards
-         * 2 = first move
-         * **/
-
         if (canMoveForward(board, position, direction)) {
              addValidPositions(1, position, direction, endPositions);
             if (isFirstMove(position, teamColor) && canMoveForward(board, position, direction*2)) {

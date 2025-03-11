@@ -2,7 +2,6 @@ package handlers;
 
 import dataaccess.AuthDAO;
 import exception.ResponseException;
-import model.AuthData;
 
 
 public class HandlerBase {

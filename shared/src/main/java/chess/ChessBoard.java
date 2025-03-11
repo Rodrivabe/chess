@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] squares = new ChessPiece[8][8];
+    private final ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
         
@@ -55,7 +55,7 @@ public class ChessBoard {
 
 
         for(int k = 0; k<8; k++) {
-            squares[1][k] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);;
+            squares[1][k] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         }
 
         for(int i = 2; i < 6; i++){
@@ -65,7 +65,7 @@ public class ChessBoard {
         }
 
         for(int k = 0; k<8; k++) {
-            squares[6][k] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);;
+            squares[6][k] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
 
 

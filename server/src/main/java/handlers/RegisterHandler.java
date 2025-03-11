@@ -36,12 +36,3 @@ public class RegisterHandler extends HandlerBase implements Route {
 
 }
 
-
-/**
- * LoginRequest request = (LoginRequest)gson.fromJson(reqData, LoginRequest.class);
- * <p>
- * LoginService service = new LoginService();
- * LoginResult result = service.login(request);
- * <p>
- * return gson.toJson(result);
- */

@@ -9,9 +9,8 @@ public class MemoryGameDAO implements GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
     private int nextId = 1;
 
-    public GameData insertGame(GameData game) {
+    public void insertGame(GameData game) {
         games.put(game.gameID(), game);
-        return game;
     }
 
     public GameData getGame(int gameID) {
@@ -29,10 +28,6 @@ public class MemoryGameDAO implements GameDAO {
     public void updateGame(int gameID, GameData updatedGame) {
         games.put(gameID, updatedGame);
 
-    }
-
-    public void deleteGame(int gameID) {
-        games.remove(gameID);
     }
 
     public void deleteAllGames() {
