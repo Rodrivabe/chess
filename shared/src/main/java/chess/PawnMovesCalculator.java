@@ -29,10 +29,13 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 
-    private void destinationIsPromotionAndAddMoves(ChessPosition startPosition, Collection<ChessPosition> endPositions, ChessGame.TeamColor teamColor, Collection<ChessMove> moves) {
+    private void destinationIsPromotionAndAddMoves(ChessPosition startPosition,
+                                                   Collection<ChessPosition> endPositions, ChessGame.TeamColor teamColor,
+                                                   Collection<ChessMove> moves) {
         for(ChessPosition endPosition: endPositions){
             int endPositionRow = endPosition.getRow();
-            if (endPositionRow == 8 && teamColor == ChessGame.TeamColor.WHITE || endPositionRow == 1 && teamColor == ChessGame.TeamColor.BLACK) {
+            if (endPositionRow == 8 && teamColor == ChessGame.TeamColor.WHITE || endPositionRow == 1 &&
+                    teamColor == ChessGame.TeamColor.BLACK) {
                 ChessPiece.PieceType [] pieceTypes = {
                         ChessPiece.PieceType.QUEEN,
                         ChessPiece.PieceType.BISHOP,
@@ -50,7 +53,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
     }
 
-    private void canCaptureEnemy(ChessBoard board, ChessPosition position, int direction, ChessGame.TeamColor teamColor, Collection<ChessPosition> endPositions) {
+    private void canCaptureEnemy(ChessBoard board, ChessPosition position, int direction,
+                                 ChessGame.TeamColor teamColor, Collection<ChessPosition> endPositions) {
         int [][] diagonalDirections = {{direction, 1}, {direction, -1}};
         int rowPosition = position.getRow();
         int colPosition = position.getColumn();

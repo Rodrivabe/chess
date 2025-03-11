@@ -10,7 +10,9 @@ public class MovePieceForward {
         return row < 9 && row > 0 && col > 0 && col < 9;
     }
 
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position, ChessGame.TeamColor teamColor, int[][] directions, ChessPiece.PieceType type) {
+    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition position,
+                                                ChessGame.TeamColor teamColor, int[][] directions,
+                                                ChessPiece.PieceType type) {
 
 
         int rowPosition = position.getRow();
@@ -24,7 +26,9 @@ public class MovePieceForward {
 
     }
 
-    private Collection<ChessMove> moveAndEat(int rowPosition, int colPosition, ChessBoard board, int[][] directions, ChessPosition position, ChessGame.TeamColor teamColor) {
+    private Collection<ChessMove> moveAndEat(int rowPosition, int colPosition, ChessBoard board,
+                                             int[][] directions, ChessPosition position,
+                                             ChessGame.TeamColor teamColor) {
         Collection<ChessMove> moves = new ArrayList<>();
 
 
@@ -62,7 +66,9 @@ public class MovePieceForward {
 
     }
 
-    private Collection<ChessMove> jumpAndEat(int rowPosition, int colPosition, ChessBoard board, int[][] directions, ChessPosition position, ChessGame.TeamColor teamColor) {
+    private Collection<ChessMove> jumpAndEat(int rowPosition, int colPosition, ChessBoard board,
+                                             int[][] directions, ChessPosition position,
+                                             ChessGame.TeamColor teamColor) {
         Collection<ChessMove> moves = new ArrayList<>();
 
         ChessPosition targetPosition;
