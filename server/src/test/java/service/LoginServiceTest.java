@@ -21,7 +21,7 @@ class LoginServiceTest {
     }
 
     @Test
-    void loginUser_success() throws ResponseException {
+    void loginUserSuccess() throws ResponseException {
         // Register a user first
         userService.register(new requests.RegisterRequest("testUser", "securePass", "test@example.com"));
 

@@ -9,26 +9,26 @@ public class KnightMovesCalculator implements PieceMovesCalculator {
         Collection<ChessMove> moves = new ArrayList<>();
         int [][] directions = {{1,-2}, {-1,-2}, {2,-1}, {2,1}, {1, 2}, {-1,2}, {-2,-1}, {-2,1}};
 
-        ChessPosition target_position;
-        int row_position = position.getRow();
-        int col_position = position.getColumn();
+        ChessPosition targetPosition;
+        int rowPosition = position.getRow();
+        int colPosition = position.getColumn();
 
         ChessMove validMove;
 
         for(int[] direction : directions){
 
-            int newRow = row_position + direction[0];
-            int newColumn = col_position + direction[1];
+            int newRow = rowPosition + direction[0];
+            int newColumn = colPosition + direction[1];
 
             if(inBounds(newRow, newColumn)){
-                target_position = new ChessPosition(newRow, newColumn);
-                ChessPiece target_piece = board.getPiece(target_position);
+                targetPosition = new ChessPosition(newRow, newColumn);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
 
-                if(target_piece == null){
-                    validMove = new ChessMove(position, target_position, null);
+                if(targetPiece == null){
+                    validMove = new ChessMove(position, targetPosition, null);
                     moves.add(validMove);
-                } else if (target_piece.getTeamColor()!= teamColor) {
-                    validMove = new ChessMove(position, target_position, null);
+                } else if (targetPiece.getTeamColor()!= teamColor) {
+                    validMove = new ChessMove(position, targetPosition, null);
                     moves.add(validMove);
                 }
             }

@@ -51,20 +51,20 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
     }
 
     private void canCaptureEnemy(ChessBoard board, ChessPosition position, int direction, ChessGame.TeamColor teamColor, Collection<ChessPosition> endPositions) {
-        int [][] diagonal_directions = {{direction, 1}, {direction, -1}};
-        int row_position = position.getRow();
-        int col_position = position.getColumn();
-        for(int[] diagonal_position : diagonal_directions){
-            int diagonal_row = diagonal_position[0];
-            int diagonal_col =diagonal_position[1];
-            ChessPosition target_position = new ChessPosition(row_position+diagonal_row, col_position+diagonal_col);
+        int [][] diagonalDirections = {{direction, 1}, {direction, -1}};
+        int rowPosition = position.getRow();
+        int colPosition = position.getColumn();
+        for(int[] diagonalPosition : diagonalDirections){
+            int diagonalRow = diagonalPosition[0];
+            int diagonalCol =diagonalPosition[1];
+            ChessPosition targetPosition = new ChessPosition(rowPosition+diagonalRow, colPosition+diagonalCol);
 
-            if (inBounds(target_position.getRow(), target_position.getColumn())){
-                ChessPiece target_piece = board.getPiece(target_position);
-                boolean is_enemy;
-                is_enemy = target_piece != null && target_piece.getTeamColor() != teamColor;
-                if(is_enemy){
-                    endPositions.add(target_position);
+            if (inBounds(targetPosition.getRow(), targetPosition.getColumn())){
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+                boolean isEnemy;
+                isEnemy = targetPiece != null && targetPiece.getTeamColor() != teamColor;
+                if(isEnemy){
+                    endPositions.add(targetPosition);
                 }
             }
         }
@@ -72,29 +72,29 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
 
 
     private boolean isFirstMove(ChessPosition position, ChessGame.TeamColor teamColor) {
-        int row_position = position.getRow();
-        return teamColor == ChessGame.TeamColor.BLACK && row_position == 7 || teamColor == ChessGame.TeamColor.WHITE && row_position == 2;
+        int positionRow = position.getRow();
+        return teamColor == ChessGame.TeamColor.BLACK && positionRow == 7 || teamColor == ChessGame.TeamColor.WHITE && positionRow == 2;
     }
 
 
-    private void addValidPositions(int move_type, ChessPosition position, int direction, Collection<ChessPosition> endPositions ) {
+    private void addValidPositions(int moveType, ChessPosition position, int direction, Collection<ChessPosition> endPositions ) {
         //move forward
-        int row_position = position.getRow();
-        int col_position = position.getColumn();
-        ChessPosition target_position = new ChessPosition(row_position+(direction*move_type), col_position);
+        int rowPosition = position.getRow();
+        int positionColumn = position.getColumn();
+        ChessPosition chessPosition = new ChessPosition(rowPosition+(direction*moveType), positionColumn);
 
 
-        endPositions.add(target_position);
+        endPositions.add(chessPosition);
     }
 
     private boolean canMoveForward(ChessBoard board, ChessPosition position, int direction) {
-        int row_position = position.getRow();
-        int col_position = position.getColumn();
-        ChessPosition target_position = new ChessPosition(row_position+direction, col_position);
-        ChessPiece target_piece = board.getPiece(target_position);
-        boolean is_empty;
-        is_empty = target_piece == null;
-        return inBounds(target_position.getRow(), target_position.getColumn()) && is_empty;
+        int rowPosition = position.getRow();
+        int colPosition = position.getColumn();
+        ChessPosition targetPosition = new ChessPosition(rowPosition+direction, colPosition);
+        ChessPiece targetPiece = board.getPiece(targetPosition);
+        boolean isEmpty;
+        isEmpty = targetPiece == null;
+        return inBounds(targetPosition.getRow(), targetPosition.getColumn()) && isEmpty;
     }
 
     boolean inBounds(int row, int col){
