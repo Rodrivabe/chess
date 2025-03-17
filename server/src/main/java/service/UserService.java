@@ -77,17 +77,6 @@ public class UserService extends HandlerBase {
     }
 
 
-
-/**
-    public LoginResult login(LoginRequest loginRequest) {
-    }
-
-    public void logout(LogoutRequest logoutRequest) {
-    }
-
- **/
-
-
     public Collection<UserData> listAllUsers() {
         return userDAO.listUsers();
     }

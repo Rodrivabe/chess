@@ -5,6 +5,9 @@ import exception.ResponseException;
 import java.sql.*;
 import java.util.Properties;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+import static java.sql.Types.NULL;
+
 public class DatabaseManager {
     private static final String DATABASE_NAME;
     private static final String USER;
@@ -82,6 +85,36 @@ public class DatabaseManager {
             }
         } catch (SQLException ex) {
             throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
+    public static int executeUpdate(String sql, Object... params) throws ResponseException {
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            // Assign parameters dynamically
+            for (int i = 0; i < params.length; i++) {
+                if (params[i] instanceof String str) {
+                    stmt.setString(i + 1, str);
+                } else if (params[i] instanceof Integer num) {
+                    stmt.setInt(i + 1, num);
+                } else if (params[i] == null) {
+                    stmt.setNull(i + 1, Types.NULL);
+                }
+            }
+
+            stmt.executeUpdate();
+
+            // If an ID was generated, return it
+            try (var rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+            return 0;
+
+        } catch (SQLException e) {
+            throw new ResponseException(500, String.format("Database update failed: %s, %s", sql, e.getMessage()));
         }
     }
 }
