@@ -4,9 +4,11 @@ package dataaccess;
 import exception.ResponseException;
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
 
 public class MySqlUserDAO extends DatabaseManager implements UserDAO{
 
@@ -24,7 +26,7 @@ public class MySqlUserDAO extends DatabaseManager implements UserDAO{
 
 
 
-    public void insertUser(UserData user) throws  R{
+    public void insertUser(UserData user) throws ResponseException{
         var insertUserStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         executeUpdate(insertUserStatement, user.username(), user.password(), user.email());
     }
@@ -34,8 +36,28 @@ public class MySqlUserDAO extends DatabaseManager implements UserDAO{
     }
 
     public Collection<UserData> listUsers() throws ResponseException{
+        Collection<UserData> result = new ArrayList<>();
+        var listUsersStatement = "SELECT username, password, email FROM users";
 
-        return List.of();
+        try (var conn = DatabaseManager.getConnection();
+             var ps = conn.prepareStatement(listUsersStatement);
+             var rs = ps.executeQuery()){
+            while (rs.next()) {
+                result.add(readUser(rs));
+            }
+        } catch (Exception e) {
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
+
+    }
+
+    private UserData readUser(ResultSet rs) throws SQLException {
+        return new UserData(
+                rs.getString("username"),
+                rs.getString("password"),
+                rs.getString("email")
+        );
     }
 
     public void deleteUser(String username) throws ResponseException {
