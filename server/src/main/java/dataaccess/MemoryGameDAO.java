@@ -9,10 +9,13 @@ public class MemoryGameDAO implements GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
     private int nextId = 1;
 
-    public void insertGame(GameData game) {
+
+    public GameData insertGame(GameData game) {
         int assignedID = nextId++;
         GameData newGame = new GameData(assignedID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
-        games.put(game.gameID(), game);
+
+        games.put(game.gameID(), newGame);
+        return newGame;
     }
 
     public GameData getGame(int gameID) {

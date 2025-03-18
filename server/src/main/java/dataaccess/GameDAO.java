@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public interface GameDAO {
 
-    void insertGame(GameData game) throws ResponseException;;
+    GameData insertGame(GameData game) throws ResponseException;;
 
     GameData getGame(int gameID) throws ResponseException;;
 

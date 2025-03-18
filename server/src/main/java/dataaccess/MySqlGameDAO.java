@@ -25,14 +25,15 @@ public class MySqlGameDAO implements GameDAO {
             """};
         DatabaseManager.configureDataBase(createGameTableIfNotExist);
     }
-
-    public void insertGame(GameData game) throws ResponseException{
+    @Override
+    public GameData insertGame(GameData game) throws ResponseException{
         var insertGameStatement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
         String gameStateJson = new Gson().toJson(game.game());
 
         int gameID = DatabaseManager.executeUpdate(insertGameStatement, game.whiteUsername(), game.blackUsername(),
                 game.gameName(), gameStateJson);
-        game.setGameId(gameID);
+        return game.setGameId(gameID);
+
 
     }
 
