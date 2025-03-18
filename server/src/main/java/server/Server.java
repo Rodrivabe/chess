@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.*;
+import exception.ResponseException;
 import handlers.*;
 import service.ClearService;
 import service.GameService;
@@ -8,7 +9,9 @@ import service.UserService;
 import spark.Spark;
 
 public class Server {
-
+        private AuthDAO authDAO;
+        private GameDAO gameDAO;
+        private UserDAO userDAO;
 
     public Server() {
 
@@ -19,9 +22,14 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-        UserDAO userDAO = new MemoryUserDAO();
+        try {
+            authDAO = new MySqlAuthDAO();
+            gameDAO = new MemoryGameDAO();
+            userDAO = new MySqlUserDAO();
+        } catch (ResponseException e) {
+            System.out.println("Error with creating your DAO");
+        }
+
 
 
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);

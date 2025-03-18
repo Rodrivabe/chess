@@ -75,9 +75,22 @@ public class DatabaseManager {
         }
     }
 
-    public void configureDataBase(String[] createdStatements) throws ResponseException {
+    public static void configureDataBase(String[] createdStatements) throws ResponseException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
+
+            String[] dropStatements = {
+                    "DROP TABLE IF EXISTS auth;",
+                    "DROP TABLE IF EXISTS users;",
+                    "DROP TABLE IF EXISTS games;"
+            };
+
+            for (String drop : dropStatements) {
+                try (var dropStmt = conn.prepareStatement(drop)) {
+                    dropStmt.executeUpdate();
+                }
+            }
+
             for (var statement : createdStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();

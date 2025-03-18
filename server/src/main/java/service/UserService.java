@@ -77,7 +77,7 @@ public class UserService extends HandlerBase {
     }
 
 
-    public Collection<UserData> listAllUsers() {
+    public Collection<UserData> listAllUsers() throws ResponseException {
         return userDAO.listUsers();
     }
 

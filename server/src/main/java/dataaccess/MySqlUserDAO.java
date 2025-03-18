@@ -10,28 +10,41 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-public class MySqlUserDAO extends DatabaseManager implements UserDAO{
+public class MySqlUserDAO implements UserDAO{
 
     public MySqlUserDAO() throws ResponseException {
         String[] createUserTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(50) NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                email VARCHAR(100) NOT NULL
+                email VARCHAR(100) NOT NULL,
                 PRIMARY KEY (username)
             )
             """};
-        configureDataBase(createUserTableIfNotExist);
+        DatabaseManager.configureDataBase(createUserTableIfNotExist);
     }
 
 
 
     public void insertUser(UserData user) throws ResponseException{
         var insertUserStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-        executeUpdate(insertUserStatement, user.username(), user.password(), user.email());
+        DatabaseManager.executeUpdate(insertUserStatement, user.username(), user.password(), user.email());
     }
 
-    public UserData getUser(String username) {
+    public UserData getUser(String username) throws ResponseException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM user WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(500, String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
@@ -62,13 +75,13 @@ public class MySqlUserDAO extends DatabaseManager implements UserDAO{
 
     public void deleteUser(String username) throws ResponseException {
         var deleteAuthStatement = "DELETE FROM auth WHERE username=?";
-        executeUpdate(deleteAuthStatement, username);
+        DatabaseManager.executeUpdate(deleteAuthStatement, username);
         var deleteUserStatement = "DELETE FROM user WHERE username=?";
-        executeUpdate(deleteUserStatement, username);
+        DatabaseManager.executeUpdate(deleteUserStatement, username);
     }
 
     public void deleteAllUsers() throws ResponseException {
-        var deleteUsersStatement = "DELETE FROM auth WHERE username=?";
-        executeUpdate(deleteUsersStatement);
+        var deleteUsersStatement = "TRUNCATE TABLE users";
+        DatabaseManager.executeUpdate(deleteUsersStatement);
     }
 }

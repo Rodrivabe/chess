@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -31,7 +32,7 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabase() {
+    void clearDatabase() throws ResponseException {
 
         userDao.insertUser(new UserData("player1", "password", "heyyou@byu.edu"));
         userDao.insertUser(new UserData("player2", "password", "heyyoutwo@byu.edu"));

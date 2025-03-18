@@ -65,7 +65,7 @@ class JoinGameServiceTest {
     }
 
     @Test
-    void joinGameInvalidGameID() {
+    void joinGameInvalidGameID() throws ResponseException {
         AuthData authData = authDao.getAuth(player1AuthToken);
         assertNotNull(authData);
 

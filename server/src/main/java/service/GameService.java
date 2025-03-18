@@ -88,7 +88,7 @@ public class GameService extends HandlerBase {
 
     }
 
-    public Collection<GameData> listAllGames() {
+    public Collection<GameData> listAllGames() throws ResponseException {
         return gameDAO.listGames();
 
     }
