@@ -24,7 +24,7 @@ public class Server {
 
         try {
             authDAO = new MySqlAuthDAO();
-            gameDAO = new MemoryGameDAO();
+            gameDAO = new MySqlGameDAO();
             userDAO = new MySqlUserDAO();
         } catch (ResponseException e) {
             System.out.println("Error with creating your DAO");
