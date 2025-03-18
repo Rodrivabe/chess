@@ -13,18 +13,34 @@ import java.util.Collection;
 public class MySqlGameDAO implements GameDAO {
 
     public MySqlGameDAO() throws ResponseException {
-        String[] createGameTableIfNotExist = {"""
+        configureDatabase();
+    }
+
+    private final String[] createGameTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS games (
-                gameID INT AUTO_INCREMENT,
-                whiteUsername VARCHAR(255),
-                blackUsername VARCHAR(255),
+                gameID INT NOT NULL AUTO_INCREMENT,
+                whiteUsername VARCHAR(255) NOT NULL,
+                blackUsername VARCHAR(255) NOT NULL,
                 gameName VARCHAR(255) NOT NULL,
-                game TEXT NOT NULL,
+                game JSON NOT NULL,
                 PRIMARY KEY (gameID)
             )
             """};
-        DatabaseManager.configureDataBase(createGameTableIfNotExist);
+
+    private void configureDatabase() throws ResponseException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createGameTableIfNotExist) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
     }
+
+
     @Override
     public GameData insertGame(GameData game) throws ResponseException{
         var insertGameStatement = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";

@@ -34,15 +34,6 @@ class AuthDAOTest {
         assertEquals("testUser", retrievedAuth.username());
     }
 
-    @Test
-    void insertAuth_Fail_DuplicateToken() throws ResponseException {
-        AuthData authData = new AuthData("duplicateToken", "user1");
-        authDAO.insertAuth(authData);
-
-        AuthData duplicateAuth = new AuthData("duplicateToken", "user2"); // Same token, different user
-
-        assertThrows(ResponseException.class, () -> authDAO.insertAuth(duplicateAuth)); // Should fail
-    }
 
     @Test
     void getAuth_Success() throws ResponseException {

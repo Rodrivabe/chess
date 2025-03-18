@@ -14,15 +14,29 @@ import java.util.Collection;
 public class MySqlUserDAO implements UserDAO{
 
     public MySqlUserDAO() throws ResponseException {
-        String[] createUserTableIfNotExist = {"""
+        configureDatabase();
+    }
+
+    private final String[] createUserTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS users (
-                username VARCHAR(50) NOT NULL,
+                username VARCHAR(50) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(100) NOT NULL,
                 PRIMARY KEY (username)
             )
             """};
-        DatabaseManager.configureDataBase(createUserTableIfNotExist);
+
+    private void configureDatabase() throws ResponseException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createUserTableIfNotExist) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
     }
 
 

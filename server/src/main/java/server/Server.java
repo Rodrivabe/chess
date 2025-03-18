@@ -26,6 +26,8 @@ public class Server {
         //gameDAO = new MemoryGameDAO();
         //userDAO = new MemoryUserDAO();
 
+
+
         try {
             userDAO = new MySqlUserDAO();
             gameDAO = new MySqlGameDAO();
