@@ -50,7 +50,7 @@ public class MySqlAuthDAO implements AuthDAO {
         );
     }
 
-    public String generateAuthToken() throws ResponseException {
+    public String generateAuthToken() {
         return UUID.randomUUID().toString();
     }
 

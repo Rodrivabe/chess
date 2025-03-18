@@ -79,18 +79,6 @@ public class DatabaseManager {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
 
-            String[] dropStatements = {
-                    "DROP TABLE IF EXISTS auth;",
-                    "DROP TABLE IF EXISTS users;",
-                    "DROP TABLE IF EXISTS games;"
-            };
-
-            for (String drop : dropStatements) {
-                try (var dropStmt = conn.prepareStatement(drop)) {
-                    dropStmt.executeUpdate();
-                }
-            }
-
             for (var statement : createdStatements) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();

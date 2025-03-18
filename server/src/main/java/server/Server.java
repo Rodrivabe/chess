@@ -22,10 +22,14 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        //authDAO = new MemoryAuthDAO();
+        //gameDAO = new MemoryGameDAO();
+        //userDAO = new MemoryUserDAO();
+
         try {
-            authDAO = new MySqlAuthDAO();
-            gameDAO = new MySqlGameDAO();
             userDAO = new MySqlUserDAO();
+            gameDAO = new MySqlGameDAO();
+            authDAO = new MySqlAuthDAO();
         } catch (ResponseException e) {
             System.out.println("Error with creating your DAO");
         }

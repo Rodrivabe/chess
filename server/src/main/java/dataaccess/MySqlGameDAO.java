@@ -18,7 +18,7 @@ public class MySqlGameDAO implements GameDAO {
                 gameID INT AUTO_INCREMENT,
                 whiteUsername VARCHAR(255),
                 blackUsername VARCHAR(255),
-                gameName TEXT NOT NULL,
+                gameName VARCHAR(255) NOT NULL,
                 game TEXT NOT NULL,
                 PRIMARY KEY (gameID)
             )

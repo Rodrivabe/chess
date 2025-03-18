@@ -14,7 +14,7 @@ public class MemoryGameDAO implements GameDAO {
         int assignedID = nextId++;
         GameData newGame = new GameData(assignedID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
 
-        games.put(game.gameID(), newGame);
+        games.put(newGame.gameID(), newGame);
         return newGame;
     }
 
