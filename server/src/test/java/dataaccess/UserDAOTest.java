@@ -4,6 +4,7 @@ import exception.ResponseException;
 import model.UserData;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,49 +26,84 @@ class UserDAOTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {MySqlUserDAO.class})  // Add MemoryUserDAO.class if it exists
+    @ValueSource(classes = {MySqlUserDAO.class})
     void insertUser(Class<? extends UserDAO> daoClass) throws ResponseException {
         UserDAO userDAO = getUserDAO(daoClass);
 
         var user = new UserData("john_doe", "securepassword", "john@example.com");
-        assertDoesNotThrow(() -> userDAO.insertUser(user));
+        userDAO.insertUser(user);
 
         var retrievedUser = userDAO.getUser("john_doe");
-        assertUserEqual(user, retrievedUser);
+
+        // Verify username & email are stored correctly
+        assertEquals(user.username(), retrievedUser.username());
+        assertEquals(user.email(), retrievedUser.email());
+
+        // Verify the password is NOT stored in plaintext
+        assertNotEquals("securepassword", retrievedUser.password());
+
+        // Verify that BCrypt correctly matches the stored hash
+        assertTrue(BCrypt.checkpw("securepassword", retrievedUser.password()));
     }
+
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlUserDAO.class})
     void listUsers(Class<? extends UserDAO> daoClass) throws ResponseException {
         UserDAO userDAO = getUserDAO(daoClass);
 
-        List<UserData> expected = new ArrayList<>();
-        expected.add(new UserData("alice", "pass123", "alice@example.com"));
-        expected.add(new UserData("bob", "mypassword", "bob@example.com"));
-        expected.add(new UserData("charlie", "1234abcd", "charlie@example.com"));
+        // Insert users
+        var user1 = new UserData("alice", "password1", "alice@example.com");
+        var user2 = new UserData("bob", "password2", "bob@example.com");
+        userDAO.insertUser(user1);
+        userDAO.insertUser(user2);
 
-        for (UserData user : expected) {
-            userDAO.insertUser(user);
-        }
+        // Fetch list of users
+        var users = userDAO.listUsers();
 
-        var actual = userDAO.listUsers();
-        assertUserCollectionEqual(expected, actual);
+        // Check size
+        assertEquals(2, users.size());
+
+        // Convert collection to a list for easier verification
+        var userList = new ArrayList<>(users);
+
+        // Check usernames and emails
+        assertEquals("alice", userList.get(0).username());
+        assertEquals("alice@example.com", userList.get(0).email());
+        assertEquals("bob", userList.get(1).username());
+        assertEquals("bob@example.com", userList.get(1).email());
+
+        // Ensure passwords are hashed
+        assertNotEquals("password1", userList.get(0).password());
+        assertNotEquals("password2", userList.get(1).password());
+
+        // Verify stored passwords match expected ones using BCrypt
+        assertTrue(BCrypt.checkpw("password1", userList.get(0).password()));
+        assertTrue(BCrypt.checkpw("password2", userList.get(1).password()));
     }
+
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlUserDAO.class})
     void getUser(Class<? extends UserDAO> daoClass) throws ResponseException {
         UserDAO userDAO = getUserDAO(daoClass);
 
-        var user = new UserData("sam", "password123", "sam@example.com");
+        var user = new UserData("sam", "mypassword", "sam@example.com");
         userDAO.insertUser(user);
 
         var retrievedUser = userDAO.getUser("sam");
-        assertUserEqual(user, retrievedUser);
 
-        // Check for a non-existent user
-        assertNull(userDAO.getUser("non_existent_user"));
+        assertEquals(user.username(), retrievedUser.username());
+        assertEquals(user.email(), retrievedUser.email());
+
+        // Password should be hashed
+        assertNotEquals("mypassword", retrievedUser.password());
+        assertTrue(BCrypt.checkpw("mypassword", retrievedUser.password()));
+
+        // Ensure a non-existent user returns null
+        assertNull(userDAO.getUser("does_not_exist"));
     }
+
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlUserDAO.class})

@@ -9,7 +9,7 @@ public class MemoryGameDAO implements GameDAO {
     final private HashMap<Integer, GameData> games = new HashMap<>();
     private int nextId = 1;
 
-    public void insertGame(GameData game) {
+    public GameData insertGame(GameData game) {
         games.put(game.gameID(), game);
     }
 

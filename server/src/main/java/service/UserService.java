@@ -6,6 +6,7 @@ import exception.ResponseException;
 import handlers.HandlerBase;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
@@ -58,7 +59,8 @@ public class UserService extends HandlerBase {
 
         }
         UserData user = userDAO.getUser(loginRequest.username());
-        if (user == null || !Objects.equals(user.password(), loginRequest.password())) {
+
+        if (user == null || !BCrypt.checkpw(loginRequest.password(), user.password())) {
             throw new ResponseException(401, "Error: unauthorized");
         }
         String authToken = authDAO.generateAuthToken();
