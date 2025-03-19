@@ -1,13 +1,17 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryUserDAO;
+import dataaccess.UserDAO;
 import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import requests.RegisterRequest;
 import results.RegisterResult;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class RegisterServiceTest {
     private AuthDAO authDao;

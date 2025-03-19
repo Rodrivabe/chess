@@ -31,16 +31,15 @@ public class DatabaseTests {
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
     }
 
-    @BeforeEach
-    public void setUp() {
-        serverFacade.clear();
-    }
-
     @AfterAll
     static void stopServer() {
         server.stop();
     }
 
+    @BeforeEach
+    public void setUp() {
+        serverFacade.clear();
+    }
 
     @Test
     @DisplayName("Persistence Test")
@@ -72,8 +71,8 @@ public class DatabaseTests {
         TestListEntry game1 = listResult.getGames()[0];
         Assertions.assertEquals(game1.getGameID(), createResult.getGameID());
         Assertions.assertEquals(gameName, game1.getGameName(), "Game name changed after restart");
-        Assertions.assertEquals(TEST_USER.getUsername(), game1.getWhiteUsername(),
-                "White player username changed after restart");
+        Assertions.assertEquals(TEST_USER.getUsername(), game1.getWhiteUsername(), "White player username changed " +
+                "after restart");
 
         //test that we can still log in
         serverFacade.login(TEST_USER);
@@ -113,8 +112,8 @@ public class DatabaseTests {
             while (rs.next()) {
                 for (int i = 1; i <= columns; i++) {
                     String value = rs.getString(i);
-                    Assertions.assertFalse(value.contains(TEST_USER.getPassword()),
-                            "Found clear text password in database");
+                    Assertions.assertFalse(value.contains(TEST_USER.getPassword()), "Found clear text password in " +
+                            "database");
                 }
             }
         }
@@ -148,7 +147,7 @@ public class DatabaseTests {
     }
 
     private Class<?> findDatabaseManager() throws ClassNotFoundException {
-        if(databaseManagerClass != null) {
+        if (databaseManagerClass != null) {
             return databaseManagerClass;
         }
 
@@ -158,11 +157,12 @@ public class DatabaseTests {
                 clazz.getDeclaredMethod("getConnection");
                 databaseManagerClass = clazz;
                 return clazz;
-            } catch (ReflectiveOperationException ignored) {}
+            } catch (ReflectiveOperationException ignored) {
+            }
         }
-        throw new ClassNotFoundException("Unable to load database in order to verify persistence. " +
-                "Are you using DatabaseManager to set your credentials? " +
-                "Did you edit the signature of the getConnection method?");
+        throw new ClassNotFoundException("Unable to load database in order to verify persistence. " + "Are you using " +
+                "DatabaseManager to set your credentials? " + "Did you edit the signature of the getConnection " +
+                "method?");
     }
 
     @FunctionalInterface

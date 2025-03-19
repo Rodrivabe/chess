@@ -2,25 +2,23 @@ package service;
 
 import dataaccess.*;
 import exception.ResponseException;
+import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import requests.JoinGameRequest;
 import results.RegisterResult;
-import model.AuthData;
-import model.GameData;
 
 import static chess.ChessGame.TeamColor.WHITE;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class JoinGameServiceTest {
+    int testGameID;
     private AuthDAO authDao;
     private GameDAO gameDao;
     private GameService gameService;
     private String player1AuthToken;
     private String player2AuthToken;
-    int testGameID;
-
 
     @BeforeEach
     void setup() throws ResponseException {
@@ -32,8 +30,10 @@ class JoinGameServiceTest {
         UserService userService = new UserService(authDao, userDao);
 
         // Create a test user and authenticate them
-        RegisterResult result1 = userService.register(new requests.RegisterRequest("player1", "password", "player1@example.com"));
-        RegisterResult result2 = userService.register(new requests.RegisterRequest("player2", "password", "player2@example.com"));
+        RegisterResult result1 = userService.register(new requests.RegisterRequest("player1", "password", "player1" +
+                "@example.com"));
+        RegisterResult result2 = userService.register(new requests.RegisterRequest("player2", "password", "player2" +
+                "@example.com"));
         player1AuthToken = result1.authToken();
         player2AuthToken = result2.authToken();
 
@@ -54,7 +54,7 @@ class JoinGameServiceTest {
         assertNotNull(authData);
 
         // Create the JoinGameRequest
-        JoinGameRequest request = new JoinGameRequest( WHITE, testGameID);
+        JoinGameRequest request = new JoinGameRequest(WHITE, testGameID);
 
         // Call the service
         gameService.joinGame(request, player1AuthToken);
@@ -85,7 +85,7 @@ class JoinGameServiceTest {
         // Player 2 tries to join the same spot
         AuthData authData2 = authDao.getAuth(player2AuthToken);
         assertNotNull(authData2);
-        JoinGameRequest request2 = new JoinGameRequest(WHITE, testGameID) ;
+        JoinGameRequest request2 = new JoinGameRequest(WHITE, testGameID);
 
         assertThrows(ResponseException.class, () -> gameService.joinGame(request2, player2AuthToken));
     }
