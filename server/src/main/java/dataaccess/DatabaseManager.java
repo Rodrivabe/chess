@@ -106,7 +106,7 @@ public class DatabaseManager {
             return 0;
 
         } catch (SQLException e) {
-            System.err.println("❌ Didn't work to execute" + sql);
+            System.err.println("❌ Database update failed: " + sql + " | Error: " + e.getMessage());
             throw new ResponseException(500, String.format("Database update failed: %s, %s", sql, e.getMessage()));
         }
     }

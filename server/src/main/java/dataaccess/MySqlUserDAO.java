@@ -19,10 +19,11 @@ public class MySqlUserDAO implements UserDAO{
 
     private final String[] createUserTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS users (
+                userIDNum INT NOT NULL AUTO_INCREMENT,
                 username VARCHAR(50) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(100) NOT NULL,
-                PRIMARY KEY (username)
+                PRIMARY KEY (userIDNum)
             )
             """};
 
@@ -41,11 +42,11 @@ public class MySqlUserDAO implements UserDAO{
 
 
 
-    public void insertUser(UserData user) throws ResponseException{
+    public int insertUser(UserData user) throws ResponseException{
         var insertUserStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
 
-        DatabaseManager.executeUpdate(insertUserStatement, user.username(), hashedPassword, user.email());
+        return DatabaseManager.executeUpdate(insertUserStatement, user.username(), hashedPassword, user.email());
     }
 
     public UserData getUser(String username) throws ResponseException{
@@ -90,15 +91,21 @@ public class MySqlUserDAO implements UserDAO{
         );
     }
 
-    public void deleteUser(String username) throws ResponseException {
-        var deleteAuthStatement = "DELETE FROM auth WHERE username=?";
-        DatabaseManager.executeUpdate(deleteAuthStatement, username);
-        var deleteUserStatement = "DELETE FROM user WHERE username=?";
-        DatabaseManager.executeUpdate(deleteUserStatement, username);
-    }
+
+
 
     public void deleteAllUsers() throws ResponseException {
-        var deleteUsersStatement = "TRUNCATE TABLE users";
+        var disableFKChecks = "SET FOREIGN_KEY_CHECKS=0;";
+        DatabaseManager.executeUpdate(disableFKChecks);
+        var deleteAuthsStatement = "DELETE FROM auth";
+        DatabaseManager.executeUpdate(deleteAuthsStatement);
+        var deleteUsersStatement = "DELETE FROM users";
         DatabaseManager.executeUpdate(deleteUsersStatement);
+        var resetUsersAutoIncrement = "ALTER TABLE users AUTO_INCREMENT = 1;";
+        DatabaseManager.executeUpdate(resetUsersAutoIncrement);
+        var enableFKChecks = "SET FOREIGN_KEY_CHECKS=1;";
+        DatabaseManager.executeUpdate(enableFKChecks);
+
+
     }
 }

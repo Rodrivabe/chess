@@ -19,8 +19,8 @@ public class MySqlGameDAO implements GameDAO {
     private final String[] createGameTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS games (
                 gameID INT NOT NULL AUTO_INCREMENT,
-                whiteUsername VARCHAR(255) NOT NULL,
-                blackUsername VARCHAR(255) NOT NULL,
+                whiteUsername VARCHAR(255) NULL,
+                blackUsername VARCHAR(255) NULL,
                 gameName VARCHAR(255) NOT NULL,
                 game JSON NOT NULL,
                 PRIMARY KEY (gameID)
@@ -48,6 +48,12 @@ public class MySqlGameDAO implements GameDAO {
 
         int gameID = DatabaseManager.executeUpdate(insertGameStatement, game.whiteUsername(), game.blackUsername(),
                 game.gameName(), gameStateJson);
+        if (gameID > 0) {
+            System.out.println("✅ Game inserted successfully with ID: " + gameID);
+        } else {
+            System.err.println("❌ Game insertion failed");
+        }
+
         return game.setGameId(gameID);
 
 

@@ -15,9 +15,9 @@ public class MySqlAuthDAO implements AuthDAO {
     private final String[] createUserTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS auth (
                 authToken VARCHAR(255) NOT NULL,
-                username VARCHAR(50) NOT NULL,
+                userID INT NOT NULL,
                 PRIMARY KEY (authToken),
-                FOREIGN KEY (username) REFERENCES users(username)
+                FOREIGN KEY (userID) REFERENCES users(userIDNum) ON DELETE CASCADE
             )
             """};
 
@@ -36,7 +36,8 @@ public class MySqlAuthDAO implements AuthDAO {
 
 
     public void insertAuth(AuthData authdata) throws ResponseException {
-        var insertUserStatement = "INSERT INTO auth (authToken, username) VALUES (?, ?)";
+        var insertUserStatement = "INSERT INTO auth (authToken, userID) VALUES (?, (SELECT userIDNum FROM users " +
+                "WHERE username = ?))";
         DatabaseManager.executeUpdate(insertUserStatement, authdata.authToken(), authdata.username());
     }
 
