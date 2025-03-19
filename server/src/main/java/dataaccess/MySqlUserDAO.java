@@ -19,11 +19,10 @@ public class MySqlUserDAO implements UserDAO{
 
     private final String[] createUserTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS users (
-                userIDNum INT NOT NULL AUTO_INCREMENT,
                 username VARCHAR(50) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(100) NOT NULL,
-                PRIMARY KEY (userIDNum)
+                PRIMARY KEY (username)
             )
             """};
 
@@ -42,11 +41,11 @@ public class MySqlUserDAO implements UserDAO{
 
 
 
-    public int insertUser(UserData user) throws ResponseException{
+    public void insertUser(UserData user) throws ResponseException {
         var insertUserStatement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
 
-        return DatabaseManager.executeUpdate(insertUserStatement, user.username(), hashedPassword, user.email());
+        DatabaseManager.executeUpdate(insertUserStatement, user.username(), hashedPassword, user.email());
     }
 
     public UserData getUser(String username) throws ResponseException{
@@ -95,17 +94,11 @@ public class MySqlUserDAO implements UserDAO{
 
 
     public void deleteAllUsers() throws ResponseException {
-        var disableFKChecks = "SET FOREIGN_KEY_CHECKS=0;";
-        DatabaseManager.executeUpdate(disableFKChecks);
+
         var deleteAuthsStatement = "DELETE FROM auth";
         DatabaseManager.executeUpdate(deleteAuthsStatement);
         var deleteUsersStatement = "DELETE FROM users";
         DatabaseManager.executeUpdate(deleteUsersStatement);
-        var resetUsersAutoIncrement = "ALTER TABLE users AUTO_INCREMENT = 1;";
-        DatabaseManager.executeUpdate(resetUsersAutoIncrement);
-        var enableFKChecks = "SET FOREIGN_KEY_CHECKS=1;";
-        DatabaseManager.executeUpdate(enableFKChecks);
-
 
     }
 }

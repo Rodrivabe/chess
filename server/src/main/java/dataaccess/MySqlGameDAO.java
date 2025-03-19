@@ -18,7 +18,7 @@ public class MySqlGameDAO implements GameDAO {
 
     private final String[] createGameTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS games (
-                gameID INT NOT NULL AUTO_INCREMENT,
+                gameID INT NOT NULL AUTO_INCREMENT UNIQUE,
                 whiteUsername VARCHAR(255) NULL,
                 blackUsername VARCHAR(255) NULL,
                 gameName VARCHAR(255) NOT NULL,
@@ -113,7 +113,7 @@ public class MySqlGameDAO implements GameDAO {
         String gameStateJson = new Gson().toJson(updatedGame.game());
 
         DatabaseManager.executeUpdate(updateGameStatement, updatedGame.whiteUsername(),
-                updatedGame.blackUsername(), updatedGame.gameName(), gameStateJson);
+                updatedGame.blackUsername(), updatedGame.gameName(), gameStateJson, gameID);
     }
 
 

@@ -69,11 +69,9 @@ public class DatabaseManager {
         try {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
-            System.out.println("✅ Connected to Database Successfully");
 
             return conn;
         } catch (SQLException e) {
-            System.err.println("❌ Database connection failed: " + e.getMessage());
             throw new DataAccessException(e.getMessage());
         }
     }
@@ -95,7 +93,6 @@ public class DatabaseManager {
             }
 
             stmt.executeUpdate();
-            System.out.println("✅ Executed Properly" + sql);
 
             // If an ID was generated, return it
             try (var rs = stmt.getGeneratedKeys()) {
@@ -106,7 +103,6 @@ public class DatabaseManager {
             return 0;
 
         } catch (SQLException e) {
-            System.err.println("❌ Database update failed: " + sql + " | Error: " + e.getMessage());
             throw new ResponseException(500, String.format("Database update failed: %s, %s", sql, e.getMessage()));
         }
     }

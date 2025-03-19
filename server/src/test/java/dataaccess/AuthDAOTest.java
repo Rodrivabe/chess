@@ -1,5 +1,6 @@
 package dataaccess;
 
+
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
@@ -10,54 +11,50 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuthDAOTest {
     private MySqlAuthDAO authDAO;
-    private MySqlUserDAO userDAO;
-    private String username;
-    private UserData newUser;
 
     @BeforeEach
     void setup() throws ResponseException {
-        userDAO = new MySqlUserDAO();
-        userDAO.deleteAllUsers();
 
-        newUser = new UserData("testUser", "password123", "test@mail.com");
-        userDAO.insertUser(newUser);
-        username = newUser.username();
+        MySqlUserDAO userDAO = new MySqlUserDAO();
+        userDAO.deleteAllUsers();
+        userDAO.insertUser(new UserData("testUser", "password123", "test@mail.com"));
 
         authDAO = new MySqlAuthDAO();
-        authDAO.deleteAllAuthTokens();
+        authDAO.deleteAllAuthTokens(); // Clear auth tokens before each test
     }
 
     @Test
-    void insertAuthSuccess() throws ResponseException {
-        AuthData authData = new AuthData("validToken123", username);
+    void insertAuth_Success() throws ResponseException {
+        AuthData authData = new AuthData("validToken123", "testUser");
 
         assertDoesNotThrow(() -> authDAO.insertAuth(authData));
 
         AuthData retrievedAuth = authDAO.getAuth("validToken123");
         assertNotNull(retrievedAuth);
-        assertEquals(username, retrievedAuth.username()); // Ensuring it maps correctly
+        assertEquals("testUser", retrievedAuth.username());
     }
 
+
     @Test
-    void getAuthSuccess() throws ResponseException {
-        AuthData authData = new AuthData("retrievableToken", username);
+    void getAuth_Success() throws ResponseException {
+        AuthData authData = new AuthData("retrievableToken", "testUser");
         authDAO.insertAuth(authData);
 
         AuthData retrievedAuth = authDAO.getAuth("retrievableToken");
 
         assertNotNull(retrievedAuth);
-        assertEquals(username, retrievedAuth.username());
+        assertEquals("testUser", retrievedAuth.username());
     }
 
     @Test
-    void getAuthFailNonExistentToken() throws ResponseException {
+    void getAuth_Fail_NonExistentToken() throws ResponseException {
         AuthData retrievedAuth = authDAO.getAuth("nonExistentToken");
 
         assertNull(retrievedAuth); // Should return null since token doesn't exist
     }
 
     @Test
-    void generateAuthTokenSuccess() {
+    void generateAuthToken_Success() {
         String token1 = authDAO.generateAuthToken();
         String token2 = authDAO.generateAuthToken();
 
@@ -67,8 +64,8 @@ class AuthDAOTest {
     }
 
     @Test
-    void deleteAuthSuccess() throws ResponseException {
-        AuthData authData = new AuthData("deleteToken", username);
+    void deleteAuth_Success() throws ResponseException {
+        AuthData authData = new AuthData("deleteToken", "userToDelete");
         authDAO.insertAuth(authData);
 
         authDAO.deleteAuth("deleteToken");
@@ -78,14 +75,14 @@ class AuthDAOTest {
     }
 
     @Test
-    void deleteAuthFailNonExistentToken() {
+    void deleteAuth_Fail_NonExistentToken() {
         assertDoesNotThrow(() -> authDAO.deleteAuth("nonExistentToken")); // Should not throw an error
     }
 
     @Test
-    void deleteAllAuthTokensSuccess() throws ResponseException {
-        authDAO.insertAuth(new AuthData("token1", username));
-        authDAO.insertAuth(new AuthData("token2", username));
+    void deleteAllAuthTokens_Success() throws ResponseException {
+        authDAO.insertAuth(new AuthData("token1", "user1"));
+        authDAO.insertAuth(new AuthData("token2", "user2"));
 
         authDAO.deleteAllAuthTokens();
 
@@ -93,4 +90,3 @@ class AuthDAOTest {
         assertNull(authDAO.getAuth("token2"));
     }
 }
-
