@@ -31,7 +31,7 @@ class GameDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlGameDAO.class})
-    void createGameWithAuthenticatedUser(Class<? extends GameDAO> daoClass) throws ResponseException {
+    void createGameWithAuthenticatedUser() throws ResponseException {
         var user = new UserData("cosmo1", "GoCougars123", "cosmo1@byu.edu");
         userDAO.insertUser(user);
         var auth = new AuthData(authDAO.generateAuthToken(), user.username());
@@ -44,7 +44,7 @@ class GameDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlGameDAO.class})
-    void createGameWithoutAuthenticationFails(Class<? extends GameDAO> daoClass) {
+    void createGameWithoutAuthenticationFails() {
         var gameName = "Unauthorized Game";
         var authToken = "invalidToken";
 
