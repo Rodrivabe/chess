@@ -45,9 +45,9 @@ public class GameService extends HandlerBase {
 
         GameData newGame = new GameData(0, null, null, createGameRequest.gameName(), new ChessGame());
 
-        GameData inserted_game = gameDAO.insertGame(newGame);
+        GameData insertedGame = gameDAO.insertGame(newGame);
 
-        return new CreateGameResult(inserted_game.gameID());
+        return new CreateGameResult(insertedGame.gameID());
 
     }
 
