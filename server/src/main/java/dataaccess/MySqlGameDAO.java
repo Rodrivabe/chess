@@ -13,10 +13,7 @@ import java.util.Collection;
 public class MySqlGameDAO implements GameDAO {
 
     public MySqlGameDAO() throws ResponseException {
-        configureDatabase();
-    }
-
-    private final String[] createGameTableIfNotExist = {"""
+        String[] createGameTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS games (
                 gameID INT NOT NULL AUTO_INCREMENT UNIQUE,
                 whiteUsername VARCHAR(255) NULL,
@@ -26,19 +23,9 @@ public class MySqlGameDAO implements GameDAO {
                 PRIMARY KEY (gameID)
             )
             """};
-
-    private void configureDatabase() throws ResponseException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createGameTableIfNotExist) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+        DatabaseManager.configureDatabase(createGameTableIfNotExist);
     }
+
 
 
     @Override

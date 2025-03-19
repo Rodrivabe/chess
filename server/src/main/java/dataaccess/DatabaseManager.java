@@ -103,4 +103,17 @@ public class DatabaseManager {
             throw new ResponseException(500, String.format("Database update failed: %s, %s", sql, e.getMessage()));
         }
     }
+
+    static void configureDatabase(String[] createStatement) throws ResponseException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatement) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
 }

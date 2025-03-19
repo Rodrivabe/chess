@@ -9,10 +9,7 @@ import java.util.UUID;
 public class MySqlAuthDAO implements AuthDAO {
 
     public MySqlAuthDAO() throws ResponseException {
-        configureDatabase();
-    }
-
-    private final String[] createUserTableIfNotExist = {"""
+        String[] createAuthTableIfNotExist = {"""
             CREATE TABLE IF NOT EXISTS auth (
                 authToken VARCHAR(255) NOT NULL,
                 username VARCHAR(50) NOT NULL,
@@ -20,18 +17,7 @@ public class MySqlAuthDAO implements AuthDAO {
                 FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
             )
             """};
-
-    private void configureDatabase() throws ResponseException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createUserTableIfNotExist) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
-        }
+        DatabaseManager.configureDatabase(createAuthTableIfNotExist);
     }
 
 
