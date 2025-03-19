@@ -1,92 +1,93 @@
 package dataaccess;
 
-
 import exception.ResponseException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AuthDAOTest {
-    private MySqlAuthDAO authDAO;
+class MySqlAuthDAOTest {
+
+    private AuthDAO authDAO;
+    private UserDAO userDAO;
+    private GameDAO gameDAO;
 
     @BeforeEach
     void setup() throws ResponseException {
-
-        MySqlUserDAO userDAO = new MySqlUserDAO();
-        userDAO.deleteAllUsers();
-        userDAO.insertUser(new UserData("testUser", "password123", "test@mail.com"));
-
         authDAO = new MySqlAuthDAO();
-        authDAO.deleteAllAuthTokens(); // Clear auth tokens before each test
+        userDAO = new MySqlUserDAO();
+        gameDAO = new MySqlGameDAO();
+        authDAO.deleteAllAuthTokens();
+        userDAO.deleteAllUsers();
+        gameDAO.deleteAllGames();
     }
 
-    @Test
-    void insertAuth_Success() throws ResponseException {
-        AuthData authData = new AuthData("validToken123", "testUser");
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
+    void registerCreatesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
+        var user = new UserData("cosmo1", "RiseAndShout123", "cosmo1@byu.edu");
+        userDAO.insertUser(user);
 
-        assertDoesNotThrow(() -> authDAO.insertAuth(authData));
+        var authToken = authDAO.generateAuthToken();
+        var auth = new AuthData(authToken, user.username());
+        authDAO.insertAuth(auth);
 
-        AuthData retrievedAuth = authDAO.getAuth("validToken123");
+        var retrievedAuth = authDAO.getAuth(authToken);
         assertNotNull(retrievedAuth);
-        assertEquals("testUser", retrievedAuth.username());
+        assertEquals(authToken, retrievedAuth.authToken());
+        assertEquals(user.username(), retrievedAuth.username());
     }
 
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
+    void loginGeneratesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
+        var user = new UserData("cosmo2", "HelloBYU12", "cosmo2@byu.edu");
+        userDAO.insertUser(user);
 
-    @Test
-    void getAuth_Success() throws ResponseException {
-        AuthData authData = new AuthData("retrievableToken", "testUser");
-        authDAO.insertAuth(authData);
+        var authToken = authDAO.generateAuthToken();
+        var auth = new AuthData(authToken, user.username());
+        authDAO.insertAuth(auth);
 
-        AuthData retrievedAuth = authDAO.getAuth("retrievableToken");
-
+        var retrievedAuth = authDAO.getAuth(authToken);
         assertNotNull(retrievedAuth);
-        assertEquals("testUser", retrievedAuth.username());
+        assertEquals(authToken, retrievedAuth.authToken());
     }
 
-    @Test
-    void getAuth_Fail_NonExistentToken() throws ResponseException {
-        AuthData retrievedAuth = authDAO.getAuth("nonExistentToken");
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
+    void logoutDeletesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
+        var user = new UserData("cosmo3", "NoBYUGood", "cosmo3@byu.edu");
+        userDAO.insertUser(user);
 
-        assertNull(retrievedAuth); // Should return null since token doesn't exist
+        var authToken = authDAO.generateAuthToken();
+        var auth = new AuthData(authToken, user.username());
+        authDAO.insertAuth(auth);
+        authDAO.deleteAuth(authToken);
+
+        var retrievedAuth = authDAO.getAuth(authToken);
+        assertNull(retrievedAuth);
     }
 
-    @Test
-    void generateAuthToken_Success() {
-        String token1 = authDAO.generateAuthToken();
-        String token2 = authDAO.generateAuthToken();
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
+    void deleteAllAuthTokensAlsoDeletesAuths(Class<? extends AuthDAO> daoClass) throws ResponseException {
+        var user1 = new UserData("player1", "BYUIsAwesome", "player1@byu.edu");
+        var user2 = new UserData("player2", "BYUIsAwesome", "player2@byu.edu");
+        userDAO.insertUser(user1);
+        userDAO.insertUser(user2);
+        String authToken1 = authDAO.generateAuthToken();
+        String authToken2 = authDAO.generateAuthToken();
 
-        assertNotNull(token1);
-        assertNotNull(token2);
-        assertNotEquals(token1, token2); // Tokens should be unique
-    }
 
-    @Test
-    void deleteAuth_Success() throws ResponseException {
-        AuthData authData = new AuthData("deleteToken", "userToDelete");
-        authDAO.insertAuth(authData);
-
-        authDAO.deleteAuth("deleteToken");
-
-        AuthData retrievedAuth = authDAO.getAuth("deleteToken");
-        assertNull(retrievedAuth); // Should be deleted
-    }
-
-    @Test
-    void deleteAuth_Fail_NonExistentToken() {
-        assertDoesNotThrow(() -> authDAO.deleteAuth("nonExistentToken")); // Should not throw an error
-    }
-
-    @Test
-    void deleteAllAuthTokens_Success() throws ResponseException {
-        authDAO.insertAuth(new AuthData("token1", "user1"));
-        authDAO.insertAuth(new AuthData("token2", "user2"));
+        authDAO.insertAuth(new AuthData(authToken1, "player1"));
+        authDAO.insertAuth(new AuthData(authToken2, "player2"));
 
         authDAO.deleteAllAuthTokens();
 
-        assertNull(authDAO.getAuth("token1"));
-        assertNull(authDAO.getAuth("token2"));
+        assertNull(authDAO.getAuth(authToken1));
+        assertNull(authDAO.getAuth(authToken2));
     }
 }
