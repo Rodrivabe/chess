@@ -13,7 +13,6 @@ import results.LoginResult;
 import results.RegisterResult;
 
 import java.util.Collection;
-import java.util.Objects;
 
 public class UserService extends HandlerBase {
     private final AuthDAO authDAO;

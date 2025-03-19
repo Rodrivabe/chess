@@ -48,12 +48,6 @@ public class MySqlGameDAO implements GameDAO {
 
         int gameID = DatabaseManager.executeUpdate(insertGameStatement, game.whiteUsername(), game.blackUsername(),
                 game.gameName(), gameStateJson);
-        if (gameID > 0) {
-            System.out.println("✅ Game inserted successfully with ID: " + gameID);
-        } else {
-            System.err.println("❌ Game insertion failed");
-        }
-
         return game.setGameId(gameID);
 
 

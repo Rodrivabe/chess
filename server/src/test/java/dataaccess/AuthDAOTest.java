@@ -9,17 +9,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MySqlAuthDAOTest {
+class AuthDAOTest {
 
     private AuthDAO authDAO;
     private UserDAO userDAO;
-    private GameDAO gameDAO;
 
     @BeforeEach
     void setup() throws ResponseException {
         authDAO = new MySqlAuthDAO();
         userDAO = new MySqlUserDAO();
-        gameDAO = new MySqlGameDAO();
+        GameDAO gameDAO = new MySqlGameDAO();
         authDAO.deleteAllAuthTokens();
         userDAO.deleteAllUsers();
         gameDAO.deleteAllGames();

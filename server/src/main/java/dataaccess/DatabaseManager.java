@@ -5,9 +5,6 @@ import exception.ResponseException;
 import java.sql.*;
 import java.util.Properties;
 
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
-
 public class DatabaseManager {
     private static final String DATABASE_NAME;
     private static final String USER;
@@ -83,12 +80,12 @@ public class DatabaseManager {
 
             // Assign parameters dynamically
             for (int i = 0; i < params.length; i++) {
-                if (params[i] instanceof String str) {
-                    stmt.setString(i + 1, str);
-                } else if (params[i] instanceof Integer num) {
-                    stmt.setInt(i + 1, num);
-                } else if (params[i] == null) {
-                    stmt.setNull(i + 1, Types.NULL);
+                switch (params[i]) {
+                    case String str -> stmt.setString(i + 1, str);
+                    case Integer num -> stmt.setInt(i + 1, num);
+                    case null -> stmt.setNull(i + 1, Types.NULL);
+                    default -> {
+                    }
                 }
             }
 

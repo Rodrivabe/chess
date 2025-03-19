@@ -7,11 +7,11 @@ import java.util.Collection;
 
 public interface UserDAO {
 
-    void insertUser(UserData user) throws ResponseException;;
+    void insertUser(UserData user) throws ResponseException;
 
-    UserData getUser(String username) throws ResponseException;;
+    UserData getUser(String username) throws ResponseException;
 
-    Collection<UserData> listUsers() throws ResponseException;;
+    Collection<UserData> listUsers() throws ResponseException;
 
     void deleteAllUsers() throws ResponseException;
 

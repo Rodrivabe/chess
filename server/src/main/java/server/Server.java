@@ -22,9 +22,9 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        //authDAO = new MemoryAuthDAO();
-        //gameDAO = new MemoryGameDAO();
-        //userDAO = new MemoryUserDAO();
+        // Example: authDAO = new MemoryAuthDAO();
+        // gameDAO = new MemoryGameDAO();
+        // userDAO = new MemoryUserDAO();
 
 
 

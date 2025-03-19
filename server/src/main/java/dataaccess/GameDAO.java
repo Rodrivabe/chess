@@ -7,14 +7,14 @@ import java.util.Collection;
 
 public interface GameDAO {
 
-    GameData insertGame(GameData game) throws ResponseException;;
+    GameData insertGame(GameData game) throws ResponseException;
 
-    GameData getGame(int gameID) throws ResponseException;;
+    GameData getGame(int gameID) throws ResponseException;
 
-    Collection<GameData> listGames() throws ResponseException;;
+    Collection<GameData> listGames() throws ResponseException;
 
-    void updateGame(int gameID, GameData updatedGame) throws ResponseException;;
+    void updateGame(int gameID, GameData updatedGame) throws ResponseException;
 
-    void deleteAllGames() throws ResponseException;;
+    void deleteAllGames() throws ResponseException;
 
 }
