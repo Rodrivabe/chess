@@ -27,16 +27,28 @@ class UserDAOTest {
 
         var user = new UserData("cosmo1", "Shout123", "cosmo@byu.edu");
         assertDoesNotThrow(() -> userDAO.insertUser(user));
+
+        var retrievedUser = userDAO.getUser("cosmo1");
+        assertNotNull(retrievedUser);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlUserDAO.class})
+    void insertDuplicateUser(Class<? extends UserDAO> daoClass) throws ResponseException {
+        UserDAO userDAO = getUserDAO(daoClass);
+        var user = new UserData("cosmo2", "RiseShout", "cosmo2@byu.edu");
+        userDAO.insertUser(user);
+        assertThrows(ResponseException.class, () -> userDAO.insertUser(user));
     }
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlUserDAO.class})
     void getUser(Class<? extends UserDAO> daoClass) throws ResponseException {
         UserDAO userDAO = getUserDAO(daoClass);
-        var user = new UserData("cosmo2", "GoCougars456", "brigham@byu.edu");
+        var user = new UserData("cosmo3", "GoCougars456", "brigham@byu.edu");
         userDAO.insertUser(user);
 
-        var retrievedUser = userDAO.getUser("cosmo2");
+        var retrievedUser = userDAO.getUser("cosmo3");
         assertNotNull(retrievedUser);
         assertEquals(user.username(), retrievedUser.username());
         assertEquals(user.email(), retrievedUser.email());

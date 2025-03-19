@@ -42,8 +42,21 @@ class AuthDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlAuthDAO.class})
-    void loginGeneratesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
+    void registerWithExistingUsernameFails(Class<? extends AuthDAO> daoClass) throws ResponseException {
         var user = new UserData("cosmo2", "HelloBYU12", "cosmo2@byu.edu");
+        userDAO.insertUser(user);
+
+        var authToken = authDAO.generateAuthToken();
+        var auth = new AuthData(authToken, user.username());
+        authDAO.insertAuth(auth);
+
+        assertThrows(ResponseException.class, () -> authDAO.insertAuth(auth));
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
+    void loginGeneratesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
+        var user = new UserData("cosmo3", "GoCougars456", "cosmo3@byu.edu");
         userDAO.insertUser(user);
 
         var authToken = authDAO.generateAuthToken();
@@ -57,8 +70,17 @@ class AuthDAOTest {
 
     @ParameterizedTest
     @ValueSource(classes = {MySqlAuthDAO.class})
+    void loginWithInvalidUserFails(Class<? extends AuthDAO> daoClass) {
+        var authToken = authDAO.generateAuthToken();
+        var auth = new AuthData(authToken, "nonexistentUser");
+
+        assertThrows(ResponseException.class, () -> authDAO.insertAuth(auth));
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {MySqlAuthDAO.class})
     void logoutDeletesAuthToken(Class<? extends AuthDAO> daoClass) throws ResponseException {
-        var user = new UserData("cosmo3", "NoBYUGood", "cosmo3@byu.edu");
+        var user = new UserData("cosmo4", "NoBYUGood", "cosmo4@byu.edu");
         userDAO.insertUser(user);
 
         var authToken = authDAO.generateAuthToken();
@@ -70,6 +92,7 @@ class AuthDAOTest {
         assertNull(retrievedAuth);
     }
 
+
     @ParameterizedTest
     @ValueSource(classes = {MySqlAuthDAO.class})
     void deleteAllAuthTokensAlsoDeletesAuths(Class<? extends AuthDAO> daoClass) throws ResponseException {
@@ -79,7 +102,6 @@ class AuthDAOTest {
         userDAO.insertUser(user2);
         String authToken1 = authDAO.generateAuthToken();
         String authToken2 = authDAO.generateAuthToken();
-
 
         authDAO.insertAuth(new AuthData(authToken1, "player1"));
         authDAO.insertAuth(new AuthData(authToken2, "player2"));
