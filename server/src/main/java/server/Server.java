@@ -38,7 +38,7 @@ public class Server {
         GameService gameService = new GameService(authDAO, gameDAO);
 
         // Register your endpoints and handle exceptions here.
-        //delete
+        //clear
         Spark.delete("/db", (req, res) -> (new ClearHandler(clearService)).handleRequest(res));
         //Register
         Spark.post("/user", new RegisterHandler(userService));
