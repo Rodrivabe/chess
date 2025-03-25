@@ -26,7 +26,8 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server = new Server();
-        var serverUrl = "http://localhost:8080";
+        int port = server.run(0); // 0 lets the OS pick an open port
+        String serverUrl = "http://localhost:" + port;
         facade = new ServerFacade(serverUrl);
 
     }

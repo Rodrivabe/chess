@@ -7,11 +7,13 @@ public class Repl {
     private final GamePlayClient gamePlayClient;
     private final PostLoginClient postLoginClient;
     private final PreLogInClient preLogInClient;
+    private final Session session = new Session();
 
     public Repl(String serverUrl){
-        gamePlayClient = new GamePlayClient(serverUrl);
-        postLoginClient = new PostLoginClient(serverUrl);
-        preLogInClient = new PreLogInClient(serverUrl);
+        gamePlayClient = new GamePlayClient(serverUrl, session);
+        postLoginClient = new PostLoginClient(serverUrl, session);
+        preLogInClient = new PreLogInClient(serverUrl, session);
+
 
     }
 
@@ -26,8 +28,20 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                result = preLogInClient.eval(line);
-                System.out.print(BLUE + result);
+                switch (session.state){
+                    case LOGEDOUT:
+                        result = preLogInClient.eval(line);
+                        System.out.print(BLUE + result);
+                        break;
+                    case LOGEDIN:
+                        result = postLoginClient.eval(line);
+                        System.out.print(BLUE + result);
+                        break;
+                    case PLAYING:
+                        gamePlayClient.printBoard(session.playerColor);
+                }
+
+
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);

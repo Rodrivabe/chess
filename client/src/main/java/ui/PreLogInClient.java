@@ -17,32 +17,30 @@ public class PreLogInClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private State state = State.LOGEDOUT;
+    private final Session session;
 
-    public PreLogInClient(String serverUrl) {
+
+
+
+    public PreLogInClient(String serverUrl, Session session) {
             server = new ServerFacade(serverUrl);
             this.serverUrl = serverUrl;
+            this.session = session;
     }
 
     public String eval(String input) {
-        try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
-            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "login" -> login(params);
-                case "register" -> register(params);
-                case "quit" -> "quit";
-                default -> help();
-            };
-        } catch (ResponseException ex) {
-            return ex.getMessage();
-        }
-
-
+        var tokens = input.toLowerCase().split(" ");
+        var cmd = (tokens.length > 0) ? tokens[0] : "help";
+        var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+        return switch (cmd) {
+            case "login" -> login(params);
+            case "register" -> register(params);
+            case "quit" -> "quit";
+            default -> help();
+        };
     }
 
-    private String register(String... params) {
+    private String register( String... params) {
         if (params.length != 3) {
             return "You need to provide information like this: register <USERNAME> <PASSWORD> <EMAIL>";
         }
@@ -50,7 +48,8 @@ public class PreLogInClient {
         try {
             RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
             server.register(registerRequest);
-            state = State.LOGEDOUT;
+            session.state = State.LOGEDOUT;
+            session.username = params[0];
             visitorName = params[0];
             return String.format("You registered as %s.", visitorName);
         } catch (ResponseException e) {
@@ -69,9 +68,14 @@ public class PreLogInClient {
         try {
             LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
             LoginResult result = server.login(loginRequest);
-            state = State.LOGEDIN;
+
+            session.state = State.LOGEDIN;
+            session.username = params[0];
+            session.authToken = result.authToken();
+
             visitorName = params[0];
-            return String.format("You signed in as %s.", visitorName);
+
+            return String.format("You signed in as %s. \ntype help to know what you can do", visitorName);
         } catch (ResponseException e) {
             return "Login failed: " + e.getMessage();
         } catch (Exception e) {
