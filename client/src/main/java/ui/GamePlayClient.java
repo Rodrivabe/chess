@@ -9,20 +9,7 @@ public class GamePlayClient {
     public GamePlayClient(String serverUrl, Session session) {
     }
 
-    public void printBoard(ChessGame.TeamColor color){
-
-        if(color == WHITE){
-            printWhiteBoard();
-        }
-        else {
-            printBlackBoard();
-        }
+    public void printBoard(ChessGame.TeamColor perspective){
     }
 
-    private void printBlackBoard() {
 
-    }
-
-    private void printWhiteBoard() {
-    }
-}

@@ -158,7 +158,7 @@ public class PostLoginClient {
             JoinGameRequest request = new JoinGameRequest(color, selectedGame.gameID());
             server.joinGame(request, session.authToken);
 
-            session.state = State.PLAYING;
+            session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = color;
 
@@ -184,7 +184,6 @@ public class PostLoginClient {
                 return "Invalid game number. Try using 'list' to see available games.";
             }
 
-            // Get the game using a loop (since lastGameList is a Collection)
             GameData selectedGame = null;
             int i = 0;
             for (GameData game : lastGameList) {
@@ -202,9 +201,9 @@ public class PostLoginClient {
             JoinGameRequest request = new JoinGameRequest(null, selectedGame.gameID());
             server.joinGame(request, session.authToken);
 
-            session.state = State.PLAYING;
+            session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
-            session.playerColor = null; // Observer
+            session.playerColor = null;
 
             return String.format("Now observing game '%s'.", selectedGame.gameName());
 
@@ -222,7 +221,6 @@ public class PostLoginClient {
                     - join <ID> [WHITE|BLACK] - a game
                     - observe ‹ID> - a game
                     - logout - when you are done
-                    - quit - playing chess
                     - help - with possible commands
                     
                     """;

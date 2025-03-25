@@ -4,13 +4,11 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl {
-    private final GamePlayClient gamePlayClient;
     private final PostLoginClient postLoginClient;
     private final PreLogInClient preLogInClient;
     private final Session session = new Session();
 
     public Repl(String serverUrl){
-        gamePlayClient = new GamePlayClient(serverUrl, session);
         postLoginClient = new PostLoginClient(serverUrl, session);
         preLogInClient = new PreLogInClient(serverUrl, session);
 
@@ -37,8 +35,6 @@ public class Repl {
                         result = postLoginClient.eval(line);
                         System.out.print(BLUE + result);
                         break;
-                    case PLAYING:
-                        gamePlayClient.printBoard(session.playerColor);
                 }
 
 
