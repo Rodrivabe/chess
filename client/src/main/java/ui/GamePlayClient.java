@@ -2,13 +2,27 @@ package ui;
 
 import chess.ChessGame;
 
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
+
 public class GamePlayClient {
     public GamePlayClient(String serverUrl, Session session) {
     }
 
-    public printBoard(ChessGame.TeamColor color){
-        if(color = ChessGame.TeamColor.WHITE){
+    public void printBoard(ChessGame.TeamColor color){
 
+        if(color == WHITE){
+            printWhiteBoard();
         }
+        else {
+            printBlackBoard();
+        }
+    }
+
+    private void printBlackBoard() {
+
+    }
+
+    private void printWhiteBoard() {
     }
 }

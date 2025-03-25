@@ -43,12 +43,14 @@ public class PostLoginClient {
             case "list" -> listGames();
             case "join" -> playGame(params);
             case "observe" -> observeGame(params);
-            case "quit" -> "quit";
             default -> help();
         };
     }
 
-
+    private String quit() {
+        session.state = State.LOGEDOUT;
+        return "You are now out of your game";
+    }
 
 
     private String logout() {
