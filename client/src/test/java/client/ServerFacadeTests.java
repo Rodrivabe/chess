@@ -1,8 +1,10 @@
 package client;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.CreateGameResult;
@@ -10,6 +12,8 @@ import results.ListGamesResult;
 import results.LoginResult;
 import server.Server;
 import server.ServerFacade;
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.BLACK;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -162,6 +166,43 @@ public class ServerFacadeTests {
             facade.listGames(invalidToken);
         });
     }
+
+    @Test
+    void joinGamePositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com");
+        facade.register(registerRequest);
+        LoginResult loginResult = facade.login(new LoginRequest("cosmo1", "pass123"));
+        String authToken = loginResult.authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("Joinable Game");
+        CreateGameResult createGameResult = facade.createGame(createGameRequest, authToken);
+        int gameID = createGameResult.gameID();
+
+        JoinGameRequest joinRequest = new JoinGameRequest(WHITE, gameID);
+        Assertions.assertDoesNotThrow(() -> facade.joinGame(joinRequest, authToken));
+    }
+
+    @Test
+    void joinGameNegativeColorAlreadyTaken() throws ResponseException {
+        facade.register(new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com"));
+        String authToken1 = facade.login(new LoginRequest("cosmo1", "pass123")).authToken();
+        int gameID = facade.createGame(new CreateGameRequest("Color Clash"), authToken1).gameID();
+
+        JoinGameRequest joinWhite = new JoinGameRequest(BLACK, gameID);
+        facade.joinGame(joinWhite, authToken1);
+
+        facade.register(new RegisterRequest("cosmo2", "pass123", "cosmo2@example.com"));
+        String authToken2 = facade.login(new LoginRequest("cosmo2", "pass123")).authToken();
+
+        JoinGameRequest duplicateJoin = new JoinGameRequest(BLACK, gameID);
+
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.joinGame(duplicateJoin, authToken2);
+        });
+
+        Assertions.assertEquals(403, exception.statusCode());
+    }
+
 
 
 
