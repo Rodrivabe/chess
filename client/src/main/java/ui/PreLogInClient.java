@@ -42,37 +42,43 @@ public class PreLogInClient {
 
     }
 
-    private String register(String... params) throws ResponseException{
-        if (params.length >= 1) {
-            try{
-                RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
-                server.register(registerRequest);
-                state = State.LOGEDOUT;
-                visitorName = String.join("-", params[0]);
-                return String.format("You registered in as %s.", visitorName);
-            }catch (Exception e) {
-                System.out.println("⚠️ Error: " + e.getMessage());
-            }
+    private String register(String... params) {
+        if (params.length != 3) {
+            return "You need to provide information like this: register <USERNAME> <PASSWORD> <EMAIL>";
         }
-        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+
+        try {
+            RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
+            server.register(registerRequest);
+            state = State.LOGEDOUT;
+            visitorName = params[0];
+            return String.format("You registered as %s.", visitorName);
+        } catch (ResponseException e) {
+            return "Server rejected registration: " + e.getMessage();
+        } catch (Exception e) {
+            return "Could not connect to server: " + e.getMessage();
+        }
     }
 
-    public String login(String... params) throws ResponseException {
 
-        if (params.length >= 1) {
-            try{
-                LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
-                server.login(loginRequest);
-                state = State.LOGEDIN;
-                visitorName = String.join("-", params);
-                return String.format("You signed in as %s.", visitorName);
-            }catch (Exception e) {
-                System.out.println("⚠️ Error: " + e.getMessage());
-            }
-
+    private String login(String... params) {
+        if (params.length != 2) {
+            return "You need to provide information like this: login <USERNAME> <PASSWORD>";
         }
-        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
+
+        try {
+            LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
+            LoginResult result = server.login(loginRequest);
+            state = State.LOGEDIN;
+            visitorName = params[0];
+            return String.format("You signed in as %s.", visitorName);
+        } catch (ResponseException e) {
+            return "Login failed: " + e.getMessage();
+        } catch (Exception e) {
+            return "Could not connect to server: " + e.getMessage();
+        }
     }
+
 
     public String help () {
             return """
