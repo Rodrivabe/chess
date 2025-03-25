@@ -6,6 +6,7 @@ import requests.CreateGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.CreateGameResult;
+import results.ListGamesResult;
 import results.LoginResult;
 import server.Server;
 import server.ServerFacade;
@@ -116,22 +117,52 @@ public class ServerFacadeTests {
     }
     @Test
     void createGameNegative() throws ResponseException {
-        // Step 1: Register and login to get valid token
         RegisterRequest registerRequest = new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com");
         facade.register(registerRequest);
         LoginResult loginResult = facade.login(new LoginRequest("cosmo1", "pass123"));
         String authToken = loginResult.authToken();
 
-        // Step 2: Create request with invalid (empty) name
         CreateGameRequest badRequest = new CreateGameRequest("");
 
-        // Step 3: Expect a 400 error or similar
         ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> {
             facade.createGame(badRequest, authToken);
         });
 
-        Assertions.assertEquals(400, exception.statusCode()); // if 400 = bad request
+        Assertions.assertEquals(400, exception.statusCode());
     }
+
+    @Test
+    void listGamesPositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com");
+        facade.register(registerRequest);
+        LoginResult loginResult = facade.login(new LoginRequest("cosmo1", "pass123"));
+        String authToken = loginResult.authToken();
+
+        facade.createGame(new CreateGameRequest("Test Game 1"), authToken);
+        facade.createGame(new CreateGameRequest("Test Game 2"), authToken);
+
+
+        ListGamesResult result = facade.listGames(authToken);
+
+        // Step 4: Assertions
+        Assertions.assertNotNull(result);
+        Assertions.assertNotNull(result.games());
+        Assertions.assertEquals(2, result.games().size());
+
+        boolean containsCreatedGame = result.games().stream()
+                .anyMatch(game -> "Test Game 1".equals(game.gameName()));
+        Assertions.assertTrue(containsCreatedGame);
+    }
+
+    @Test
+    void listGamesNegative_invalidAuthToken() {
+        String invalidToken = "not-a-valid-token";
+
+        Assertions.assertThrows(ResponseException.class, () -> {
+            facade.listGames(invalidToken);
+        });
+    }
+
 
 
 

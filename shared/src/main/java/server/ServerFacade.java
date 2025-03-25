@@ -3,9 +3,11 @@ package server;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.CreateGameResult;
+import results.ListGamesResult;
 import results.LoginResult;
 import results.RegisterResult;
 
@@ -38,7 +40,6 @@ public class ServerFacade {
     }
 
 
-
     public void logout(String authToken) throws ResponseException {
         var path = "/session";
         this.makeRequest("DELETE", path, null, authToken, null);
@@ -49,14 +50,24 @@ public class ServerFacade {
         return this.makeRequest("POST", path, request, authToken, CreateGameResult.class);
     }
 
+    public ListGamesResult listGames(String authToken) throws ResponseException{
+        var path = "/game";
+        return this.makeRequest("GET", path, null, authToken, ListGamesResult.class);
+    }
+
+    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException{
+        var path = "/game";
+        this.makeRequest("PUT", path, request, authToken, null);
+    }
+
     public void clearDataBase() throws ResponseException {
         var path = "/db";
         this.makeRequest("DELETE", path, null,null, null);
     }
 
+    private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass)
+            throws ResponseException {
 
-
-    private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
