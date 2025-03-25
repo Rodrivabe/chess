@@ -2,8 +2,10 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import requests.CreateGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
+import results.CreateGameResult;
 import results.LoginResult;
 import results.RegisterResult;
 
@@ -26,51 +28,47 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest request) throws ResponseException{
         var path = "/user";
-        return this.makeRequest("POST", path, request, RegisterResult.class, false);
+        return this.makeRequest("POST", path, request, null, RegisterResult.class);
 
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException{
         var path = "/session";
-        return this.makeRequest("POST", path, request, LoginResult.class, false);
+        return this.makeRequest("POST", path, request, null, LoginResult.class);
     }
 
 
 
     public void logout(String authToken) throws ResponseException {
-
         var path = "/session";
-        this.makeRequest("DELETE", path, authToken, LoginResult.class, true);
-
-
+        this.makeRequest("DELETE", path, null, authToken, null);
     }
 
-    public void create
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException{
+        var path = "/game";
+        return this.makeRequest("POST", path, authToken, null, CreateGameResult.class);
+    }
 
     public void clearDataBase() throws ResponseException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null, false);
+        this.makeRequest("DELETE", path, null,null, null);
     }
 
 
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass,
-                              boolean authorization) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            String authToken = null;
-            if (authorization && request != null) {
-                authToken = request.toString();
-            }
-            setHeaders(http, authorization, authToken);
 
-            if (!authorization && request != null) {
+            setHeaders(http, authToken);
+            if(request != null){
                 writeRequestBody(http, request);
             }
+
 
             http.connect();
             throwIfNotSuccessful(http);
@@ -82,8 +80,8 @@ public class ServerFacade {
         }
     }
 
-    private static void setHeaders(HttpURLConnection http, boolean authorization, String authToken) {
-        if (authorization && authToken != null) {
+    private static void setHeaders(HttpURLConnection http, String authToken) {
+        if (authToken != null) {
             http.setRequestProperty("Authorization", authToken);
         } else {
             http.setRequestProperty("Content-Type", "application/json");
