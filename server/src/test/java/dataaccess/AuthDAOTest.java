@@ -111,4 +111,6 @@ class AuthDAOTest {
         assertNull(authDAO.getAuth(authToken1));
         assertNull(authDAO.getAuth(authToken2));
     }
+
+
 }

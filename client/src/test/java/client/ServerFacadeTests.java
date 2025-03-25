@@ -1,15 +1,12 @@
 package client;
 
-import dataaccess.GameDAO;
-import dataaccess.MySqlAuthDAO;
-import dataaccess.MySqlGameDAO;
-import dataaccess.MySqlUserDAO;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
+import requests.CreateGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
+import results.CreateGameResult;
 import results.LoginResult;
-import results.RegisterResult;
 import server.Server;
 import server.ServerFacade;
 
@@ -102,6 +99,38 @@ public class ServerFacadeTests {
         Assertions.assertThrows(ResponseException.class, () -> {
             facade.login(request);
         });
+    }
+
+    @Test
+    void createGamePositive() throws ResponseException {
+        RegisterRequest registerRequest = new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com");
+        facade.register(registerRequest);
+        LoginResult loginResult = facade.login(new LoginRequest("cosmo1", "pass123"));
+        String authToken = loginResult.authToken();
+
+        CreateGameRequest createGameRequest = new CreateGameRequest("My Game");
+        CreateGameResult result = facade.createGame(createGameRequest, authToken);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.gameID());
+    }
+    @Test
+    void createGameNegative() throws ResponseException {
+        // Step 1: Register and login to get valid token
+        RegisterRequest registerRequest = new RegisterRequest("cosmo1", "pass123", "cosmo1@example.com");
+        facade.register(registerRequest);
+        LoginResult loginResult = facade.login(new LoginRequest("cosmo1", "pass123"));
+        String authToken = loginResult.authToken();
+
+        // Step 2: Create request with invalid (empty) name
+        CreateGameRequest badRequest = new CreateGameRequest("");
+
+        // Step 3: Expect a 400 error or similar
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> {
+            facade.createGame(badRequest, authToken);
+        });
+
+        Assertions.assertEquals(400, exception.statusCode()); // if 400 = bad request
     }
 
 
