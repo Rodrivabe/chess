@@ -15,40 +15,63 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
-public class SeverFacade {
+public class ServerFacade {
 
     private final String serverUrl;
 
-    public SeverFacade(String url){
-        serverUrl = url;
+    public ServerFacade(int port){
+        this.serverUrl = "http://localhost:" + port;
+
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException{
         var path = "/user";
-        return this.makeRequest("POST", path, request, RegisterResult.class);
+        return this.makeRequest("POST", path, request, RegisterResult.class, false);
 
     }
 
     public LoginResult login(LoginRequest request) throws ResponseException{
         var path = "/session";
-        return this.makeRequest("POST", path, request, LoginResult.class);
-    }
-
-    public void logout(String authToken) throws ResponseException{
-        var path = "/delete";
-        return this.makeRequest("POST", path, request, LoginResult.class);
+        return this.makeRequest("POST", path, request, LoginResult.class, false);
     }
 
 
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    public void logout(String authToken) throws ResponseException {
+
+        var path = "/session";
+        this.makeRequest("DELETE", path, authToken, LoginResult.class, true);
+
+
+    }
+
+    public void create
+
+    public void clearDataBase() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null, false);
+    }
+
+
+
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass,
+                              boolean authorization) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            writeBody(request, http);
+            String authToken = null;
+            if (authorization && request != null) {
+                authToken = request.toString();
+            }
+            setHeaders(http, authorization, authToken);
+
+            if (!authorization && request != null) {
+                writeRequestBody(http, request);
+            }
+
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -59,14 +82,19 @@ public class SeverFacade {
         }
     }
 
+    private static void setHeaders(HttpURLConnection http, boolean authorization, String authToken) {
+        if (authorization && authToken != null) {
+            http.setRequestProperty("Authorization", authToken);
+        } else {
+            http.setRequestProperty("Content-Type", "application/json");
+        }
+    }
 
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-        if (request != null) {
-            http.addRequestProperty("Content-Type", "application/json");
-            String reqData = new Gson().toJson(request);
-            try (OutputStream reqBody = http.getOutputStream()) {
-                reqBody.write(reqData.getBytes());
-            }
+
+    private static void writeRequestBody(HttpURLConnection http, Object request) throws IOException {
+        String reqData = new Gson().toJson(request);
+        try (OutputStream reqBody = http.getOutputStream()) {
+            reqBody.write(reqData.getBytes());
         }
     }
 

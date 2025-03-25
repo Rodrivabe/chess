@@ -50,7 +50,7 @@ public class Server {
         Spark.get("/game", new ListGamesHandler(gameService));
         //Create Game
         Spark.post("/game", new CreateGameHandler(gameService));
-        //
+        //Join Game
         Spark.put("/game", new JoinGameHandler(gameService));
 
 
