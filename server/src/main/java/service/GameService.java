@@ -61,10 +61,8 @@ public class GameService extends HandlerBase {
         if (game == null) {
             throw new ResponseException(400, "Error: bad request");
         }
-        GameData updatedGame;
 
-
-        if( color != WHITE && color != BLACK && color != null){
+        if( color != WHITE && color != BLACK){
             throw new ResponseException(400, "Error: That is not a valid color");
         }
 
@@ -79,13 +77,11 @@ public class GameService extends HandlerBase {
         AuthData authData = authDAO.getAuth(authToken);
         String username = authData.username();
 
-
+        GameData updatedGame;
         if (color == WHITE) {
             updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-        }else if (color == BLACK) {
+        } else {
             updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-        }else {
-            updatedGame = new GameData(game.gameID(), null, null, game.gameName(), game.game());
         }
         gameDAO.updateGame(gameID, updatedGame);
 

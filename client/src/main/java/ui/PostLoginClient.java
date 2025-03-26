@@ -102,7 +102,7 @@ public class PostLoginClient {
             int index = 1;
 
             for (GameData game : lastGameList) {
-                String sentence = String.format("%d. Game: \"%s\", \"%s\", \"%s\"\n", index++, game.gameName(), game.whiteUsername(), game.blackUsername());
+                String sentence = String.format("%d. Game: \"%s\", white username: \"%s\", black username: \"%s\"\n", index++, game.gameName(), game.whiteUsername(), game.blackUsername());
                 output.append(sentence);
 
 
@@ -205,8 +205,6 @@ public class PostLoginClient {
                 return "Game not found at that number.";
             }
 
-            JoinGameRequest request = new JoinGameRequest(null, selectedGame.gameID());
-            server.joinGame(request, session.authToken);
             session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = null;
@@ -215,8 +213,6 @@ public class PostLoginClient {
 
             return String.format("Now observing game '%s'.", selectedGame.gameName());
 
-        } catch (ResponseException e) {
-            return "Failed to observe game: " + e.getMessage();
         } catch (Exception e) {
             return "Could not connect to server: " + e.getMessage();
         }
