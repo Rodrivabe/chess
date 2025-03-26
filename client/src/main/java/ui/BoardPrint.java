@@ -65,7 +65,7 @@ public class BoardPrint extends EscapeSequences {
 
                 boolean isLightSquare = (row + col) % 2 == 0;
 
-                String bgColor = isLightSquare ? SET_BG_COLOR_LIGHT_GREY : SET_BG_COLOR_DARK_GREY;
+                String bgColor = isLightSquare ?  SET_BG_COLOR_DARK_GREY : SET_BG_COLOR_LIGHT_GREY;
                 String pieceSymbol = getSymbol(piece);
 
                 System.out.print(bgColor + pieceSymbol + RESET_TEXT_COLOR + RESET_BG_COLOR);

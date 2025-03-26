@@ -92,7 +92,7 @@ public class PostLoginClient {
     private String listGames() {
         try {
             ListGamesResult result = server.listGames(session.authToken);
-            lastGameList = result.games(); // Save the list for later use
+            lastGameList = result.games();
 
             if (lastGameList == null || lastGameList.isEmpty()) {
                 return "No games found.";
@@ -102,7 +102,10 @@ public class PostLoginClient {
             int index = 1;
 
             for (GameData game : lastGameList) {
-                output.append(String.format("%d. Game: \"%s\"\n", index++, game.gameName()));
+                String sentence = String.format("%d. Game: \"%s\", \"%s\", \"%s\"\n", index++, game.gameName(), game.whiteUsername(), game.blackUsername());
+                output.append(sentence);
+
+
 
                 if (game.whiteUsername() != null) {
                     output.append("   White: ").append(game.whiteUsername()).append("\n");
@@ -204,7 +207,6 @@ public class PostLoginClient {
 
             JoinGameRequest request = new JoinGameRequest(null, selectedGame.gameID());
             server.joinGame(request, session.authToken);
-
             session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = null;

@@ -5,6 +5,7 @@ import model.UserData;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
+import results.RegisterResult;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -47,9 +48,10 @@ public class PreLogInClient {
 
         try {
             RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
-            server.register(registerRequest);
-            session.state = State.LOGEDOUT;
-            session.username = params[0];
+            RegisterResult result = server.register(registerRequest);
+            session.state = State.LOGEDIN;
+            session.username = result.username();
+            session.authToken = result.authToken();
             visitorName = params[0];
             return String.format("You registered as %s.", visitorName);
         } catch (ResponseException e) {
