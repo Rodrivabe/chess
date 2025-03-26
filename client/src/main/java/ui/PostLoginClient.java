@@ -96,6 +96,7 @@ public class PostLoginClient {
 
             if (lastGameList == null || lastGameList.isEmpty()) {
                 return "No games found.";
+
             }
 
             StringBuilder output = new StringBuilder();
