@@ -84,7 +84,7 @@ public class BoardPrint extends EscapeSequences {
     }
 
     private static String getSymbol(ChessPiece piece) {
-        if (piece == null) return EMPTY;
+        if (piece == null) {return EMPTY;}
 
         return switch (piece.getPieceType()) {
             case KING ->

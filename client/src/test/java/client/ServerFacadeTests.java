@@ -159,7 +159,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void listGamesNegative_invalidAuthToken() {
+    void listGamesNegativeInvalidAuthToken() {
         String invalidToken = "not-a-valid-token";
 
         Assertions.assertThrows(ResponseException.class, () -> {

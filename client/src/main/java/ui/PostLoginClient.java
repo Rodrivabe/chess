@@ -5,7 +5,6 @@ import exception.ResponseException;
 import model.GameData;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
-import requests.LoginRequest;
 import results.CreateGameResult;
 import results.ListGamesResult;
 import server.ServerFacade;
@@ -49,10 +48,6 @@ public class PostLoginClient {
         };
     }
 
-    private String quit() {
-        session.state = State.LOGEDOUT;
-        return "You are now out of your game";
-    }
 
 
     private String logout() {
@@ -103,7 +98,9 @@ public class PostLoginClient {
             int index = 1;
 
             for (GameData game : lastGameList) {
-                String sentence = String.format("%d. Game: \"%s\", white username: \"%s\", black username: \"%s\"\n", index++, game.gameName(), game.whiteUsername(), game.blackUsername());
+                String sentence = String.format("%d. Game: \"%s\", white username: " +
+                        "\"%s\", black username: \"%s\"\n", index++, game.gameName(),
+                        game.whiteUsername(), game.blackUsername());
                 output.append(sentence);
 
 
