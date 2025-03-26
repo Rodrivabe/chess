@@ -20,12 +20,14 @@ public class PostLoginClient {
     private final String serverUrl;
     private final Session session;
     private Collection<GameData> lastGameList = new ArrayList<>();
+    private BoardPrint boardPrinter;
 
 
     public PostLoginClient(String serverUrl, Session session) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.session = session;
+        this.boardPrinter = new BoardPrint(session);
 
 
 
@@ -162,6 +164,8 @@ public class PostLoginClient {
             session.currentGameId = selectedGame.gameID();
             session.playerColor = color;
 
+            boardPrinter.printBoard(selectedGame.game());
+
             return String.format("Joined game '%s' as %s.", selectedGame.gameName(), color);
 
         } catch (ResponseException e) {
@@ -204,6 +208,8 @@ public class PostLoginClient {
             session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = null;
+
+            boardPrinter.printBoard(selectedGame.game());
 
             return String.format("Now observing game '%s'.", selectedGame.gameName());
 

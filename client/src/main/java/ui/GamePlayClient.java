@@ -9,7 +9,8 @@ public class GamePlayClient {
     public GamePlayClient(String serverUrl, Session session) {
     }
 
-    public void printBoard(ChessGame.TeamColor perspective){
+    public void printBoard(ChessGame.TeamColor perspective) {
     }
+}
 
 
