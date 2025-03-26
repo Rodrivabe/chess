@@ -30,6 +30,7 @@ public class ListGamesHandler  implements Route {
             res.status(e.statusCode());
 
             return e.toJson();
+
         }
     }
 
