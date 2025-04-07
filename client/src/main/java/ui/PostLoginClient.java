@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 public class PostLoginClient {
     private String visitorName = null;
     private final ServerFacade server;
@@ -151,9 +154,9 @@ public class PostLoginClient {
             ChessGame.TeamColor color;
 
             if ("WHITE".equals(colorInput)) {
-                color = ChessGame.TeamColor.WHITE;
+                color = WHITE;
             } else if ("BLACK".equals(colorInput)) {
-                color = ChessGame.TeamColor.BLACK;
+                color = BLACK;
             } else {
                 return "Invalid color. Choose WHITE or BLACK.";
             }

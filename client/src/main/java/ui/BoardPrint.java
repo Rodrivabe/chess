@@ -88,17 +88,17 @@ public class BoardPrint extends EscapeSequences {
 
         return switch (piece.getPieceType()) {
             case KING ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_KING : SET_TEXT_COLOR_RED + BLACK_KING;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_KING : SET_TEXT_COLOR_RED + BLACK_KING;
             case QUEEN ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_QUEEN : SET_TEXT_COLOR_RED + BLACK_QUEEN;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_QUEEN : SET_TEXT_COLOR_RED + BLACK_QUEEN;
             case ROOK ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_ROOK : SET_TEXT_COLOR_RED + BLACK_ROOK;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_ROOK : SET_TEXT_COLOR_RED + BLACK_ROOK;
             case BISHOP ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_BISHOP : SET_TEXT_COLOR_RED + BLACK_BISHOP;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_BISHOP : SET_TEXT_COLOR_RED + BLACK_BISHOP;
             case KNIGHT ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_KNIGHT : SET_TEXT_COLOR_RED + BLACK_KNIGHT;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_KNIGHT : SET_TEXT_COLOR_RED + BLACK_KNIGHT;
             case PAWN ->
-                    piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_GREEN + WHITE_PAWN : SET_TEXT_COLOR_RED + BLACK_PAWN;
+                    piece.getTeamColor() == WHITE ? SET_TEXT_COLOR_GREEN + WHITE_PAWN : SET_TEXT_COLOR_RED + BLACK_PAWN;
         };
     }
 }
