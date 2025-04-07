@@ -6,11 +6,13 @@ import static ui.EscapeSequences.*;
 public class Repl {
     private final PostLoginClient postLoginClient;
     private final PreLogInClient preLogInClient;
+    private final GamePlayClient gamePlayClient
     private final Session session = new Session();
 
     public Repl(String serverUrl){
         postLoginClient = new PostLoginClient(serverUrl, session);
         preLogInClient = new PreLogInClient(serverUrl, session);
+        gamePlayClient = new GamePlayClient(serverUrl, session);
 
 
     }
@@ -35,6 +37,11 @@ public class Repl {
                         result = postLoginClient.eval(line);
                         System.out.print(BLUE + result);
                         break;
+                    case PLAYING:
+                        result = gamePlayClient.eval(line);
+                        System.out.print(BLUE + result);
+                        break;
+
                 }
 
 
