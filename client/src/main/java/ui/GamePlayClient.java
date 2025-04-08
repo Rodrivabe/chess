@@ -5,6 +5,7 @@ import exception.ResponseException;
 import model.GameData;
 import requests.JoinGameRequest;
 import server.ServerFacade;
+import websocket.commands.UserGameCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,14 +15,13 @@ import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessGame.TeamColor.BLACK;
 
 public class GamePlayClient {
-    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final Session session;
+    private final ClientSession session;
     private Collection<GameData> lastGameList = new ArrayList<>();
     private BoardPrint boardPrinter;
 
-    public GamePlayClient(String serverUrl, Session session) {
+    public GamePlayClient(String serverUrl, ClientSession session) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.session = session;
@@ -56,23 +56,41 @@ public class GamePlayClient {
     }
 
     private String leave(String[] params) {
-        return null;
+
+        var leaveCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, session.authToken, session.currentGameId);
+        session.ws.send(leaveCommand)
+        var gameList = session.lastGameList;
+        int gameNumber = session.currentGameId;
+        GameData gameToLeave = null;
+        int i = 0;
+        for(GameData game : gameList){
+            if (i == gameNumber - 1) {
+                gameToLeave = game;
+                break;
+            }
+            i++;
+        }
+        session.state = State.LOGEDIN;
+        if (session.playerColor.equals("WHITE")) {
+            gameToLeave.whiteUsername() = null;
+        } else if ("BLACK".equals(session.playerColor)) {
+            color = BLACK;
+        } else {
+            return "Invalid color. Choose WHITE or BLACK.";
+        }
+
+
     }
 
     private String redraw() {
         try{
             ChessGame currentGame = session.game;
-
-
             session.state = State.PLAYING;
-            session.currentGameId = selectedGame.gameID();
-            session.playerColor = color;
+            boardPrinter.printBoard(currentGame);
+            return "Here is the game";
 
-            boardPrinter.printBoard(selectedGame.game());
 
-        } catch (ResponseException e) {
-        return "Failed to redraw the board: " + e.getMessage();
-    } catch (Exception e) {
+        } catch (Exception e) {
         return "Could not connect to server: " + e.getMessage();
     }
 

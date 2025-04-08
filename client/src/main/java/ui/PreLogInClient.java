@@ -18,12 +18,12 @@ public class PreLogInClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final Session session;
+    private final ClientSession session;
 
 
 
 
-    public PreLogInClient(String serverUrl, Session session) {
+    public PreLogInClient(String serverUrl, ClientSession session) {
             server = new ServerFacade(serverUrl);
             this.serverUrl = serverUrl;
             this.session = session;

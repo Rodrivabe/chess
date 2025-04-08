@@ -20,12 +20,11 @@ public class PostLoginClient {
     private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final Session session;
-    private Collection<GameData> lastGameList = new ArrayList<>();
+    private final ClientSession session;
     private BoardPrint boardPrinter;
 
 
-    public PostLoginClient(String serverUrl, Session session) {
+    public PostLoginClient(String serverUrl, ClientSession session) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.session = session;
@@ -90,9 +89,9 @@ public class PostLoginClient {
     private String listGames() {
         try {
             ListGamesResult result = server.listGames(session.authToken);
-            lastGameList = result.games();
+            session.lastGameList = result.games();
 
-            if (lastGameList == null || lastGameList.isEmpty()) {
+            if (session.lastGameList == null || session.lastGameList.isEmpty()) {
                 return "No games found.";
 
             }
@@ -100,7 +99,7 @@ public class PostLoginClient {
             StringBuilder output = new StringBuilder();
             int index = 1;
 
-            for (GameData game : lastGameList) {
+            for (GameData game : session.lastGameList) {
                 String sentence = String.format("%d. Game: \"%s\", white username: " +
                         "\"%s\", black username: \"%s\"\n", index++, game.gameName(),
                         game.whiteUsername(), game.blackUsername());
@@ -134,13 +133,13 @@ public class PostLoginClient {
             int gameNumber = Integer.parseInt(params[0]);
             String colorInput = params[1].toUpperCase();
 
-            if (gameNumber < 1 || gameNumber > lastGameList.size()) {
+            if (gameNumber < 1 || gameNumber > session.lastGameList.size()) {
                 return "Invalid game number. Try using 'list' to see available games.";
             }
 
             GameData selectedGame = null;
             int i = 0;
-            for (GameData game : lastGameList) {
+            for (GameData game : session.lastGameList) {
                 if (i == gameNumber - 1) {
                     selectedGame = game;
                     break;
@@ -188,13 +187,13 @@ public class PostLoginClient {
         try {
             int gameNumber = Integer.parseInt(params[0]);
 
-            if (gameNumber < 1 || gameNumber > lastGameList.size()) {
+            if (gameNumber < 1 || gameNumber > session.lastGameList.size()) {
                 return "Invalid game number. Try using 'list' to see available games.";
             }
 
             GameData selectedGame = null;
             int i = 0;
-            for (GameData game : lastGameList) {
+            for (GameData game : session.lastGameList) {
                 if (i == gameNumber - 1) {
                     selectedGame = game;
                     break;

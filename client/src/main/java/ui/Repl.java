@@ -7,7 +7,7 @@ public class Repl {
     private final PostLoginClient postLoginClient;
     private final PreLogInClient preLogInClient;
     private final GamePlayClient gamePlayClient;
-    private final Session session = new Session();
+    private final ClientSession session = new ClientSession();
 
     public Repl(String serverUrl){
         postLoginClient = new PostLoginClient(serverUrl, session);

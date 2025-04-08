@@ -9,9 +9,9 @@ import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
 public class BoardPrint extends EscapeSequences {
-    private final Session session;
+    private final ClientSession session;
 
-    public BoardPrint(Session session) {
+    public BoardPrint(ClientSession session) {
         this.session = session;
 
     }
