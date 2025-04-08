@@ -1,4 +1,4 @@
 package websocket.messages;
 
-public record LoadGameMessage() {
+public record LoadGameMessage(String game) {
 }
