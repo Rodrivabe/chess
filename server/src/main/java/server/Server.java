@@ -3,6 +3,7 @@ package server;
 import dataaccess.*;
 import exception.ResponseException;
 import handlers.*;
+import server.websocket.WebSocketHandler;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -12,8 +13,12 @@ public class Server {
         private AuthDAO authDAO;
         private GameDAO gameDAO;
         private UserDAO userDAO;
+        private final WebSocketHandler webSocketHandler;
+
+
 
     public Server() {
+        webSocketHandler = new WebSocketHandler();
 
     }
 
@@ -21,6 +26,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+
 
 
         try {
@@ -38,6 +45,7 @@ public class Server {
         GameService gameService = new GameService(authDAO, gameDAO);
 
         // Register your endpoints and handle exceptions here.
+        Spark.webSocket("/ws", webSocketHandler);
         //clear
         Spark.delete("/db", (req, res) -> (new ClearHandler(clearService)).handleRequest(res));
         //Register

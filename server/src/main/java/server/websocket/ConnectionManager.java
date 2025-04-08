@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.NotificationMessage;
 
 
 public class ConnectionManager {
@@ -19,6 +20,9 @@ public class ConnectionManager {
     }
 
     public void remove(int gameID) {
-        connections.remove(gameID);
+
+    }
+
+    public void broadcast(int gameID, String json, String username) {
     }
 }

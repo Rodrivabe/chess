@@ -6,7 +6,7 @@ import static ui.EscapeSequences.*;
 public class Repl {
     private final PostLoginClient postLoginClient;
     private final PreLogInClient preLogInClient;
-    private final GamePlayClient gamePlayClient
+    private final GamePlayClient gamePlayClient;
     private final Session session = new Session();
 
     public Repl(String serverUrl){

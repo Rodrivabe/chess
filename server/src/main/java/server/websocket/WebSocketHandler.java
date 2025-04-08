@@ -6,6 +6,8 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.*;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 
@@ -15,6 +17,8 @@ import java.io.IOException;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
+    private final Gson gson = new Gson();
+
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
@@ -25,33 +29,42 @@ public class WebSocketHandler {
             int gameID = command.getGameID();
             switch (type) {
                 case CONNECT:
-                    connect(session, username, gameID);
+                    connect(username, session, gameID);
                 case MAKE_MOVE:
-                    MakeMoveCommand move = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(username, command.getGameID(), move);
+                    makeMove(username, command.getGameID(), command);
                 case LEAVE:
-                    LeaveCommand leave = new Gson().fromJson(message, LeaveCommand.class);
                     leaveGame(username, command.getGameID());
                 case RESIGN:
-                    ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
-                    resign(username, resignCommand);
+                    resign(username, command);
             }
-        } catch (JsonSyntaxException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (JsonSyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
+    private void resign(String username, UserGameCommand command) {
+    }
+
+    private void leaveGame(String username, Integer gameID) {
+    }
+
+    private void makeMove(String username, Integer gameID, UserGameCommand command) {
+
+    }
+
     String getUsername(String authToken){
 
+        return authToken;
     }
 
     private void connect(String username, Session session, int gameID) throws IOException {
         connections.add(gameID, username, session);
+
+
         var message = String.format("%s is in the shop", username);
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(username, notification);
+
+        var notification = new NotificationMessage(message);
+        connections.broadcast(gameID, gson.toJson(notification), username);
     }
 }
