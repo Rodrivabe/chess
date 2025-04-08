@@ -8,4 +8,5 @@ public class Session {
     public String authToken;
     public Integer currentGameId = null;
     public ChessGame.TeamColor playerColor = null;
+    public ChessGame game = null;
 }
