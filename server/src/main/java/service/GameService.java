@@ -93,5 +93,13 @@ public class GameService extends HandlerBase {
 
     }
 
+    public GameData getGame(int gameID) throws ResponseException {
+        GameData game = gameDAO.getGame(gameID);
+        if (game == null) {
+            throw new ResponseException(404, "Error: Game not found");
+        }
+        return game;
+    }
+
 
 }

@@ -13,12 +13,11 @@ public class Server {
         private AuthDAO authDAO;
         private GameDAO gameDAO;
         private UserDAO userDAO;
-        private final WebSocketHandler webSocketHandler;
 
 
 
     public Server() {
-        webSocketHandler = new WebSocketHandler();
+
 
     }
 
@@ -43,6 +42,8 @@ public class Server {
         ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
         UserService userService = new UserService(authDAO, userDAO);
         GameService gameService = new GameService(authDAO, gameDAO);
+
+        WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameService);
 
         // Register your endpoints and handle exceptions here.
         Spark.webSocket("/ws", webSocketHandler);
