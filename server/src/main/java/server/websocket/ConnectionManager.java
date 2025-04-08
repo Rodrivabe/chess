@@ -24,8 +24,31 @@ public class ConnectionManager {
 
     }
 
-    public void broadcast(int gameID, String json, String username) {
+    public void broadcast(int gameID, String message, String excludeUsername) {
+        var connectionsInGame = gameConnections.get(gameID);
+        if (connectionsInGame == null) return;
+
+        var removeList = new ArrayList<Connection>();
+
+        for (var c : connectionsInGame) {
+            if (c.session.isOpen()) {
+                if (!c.username.equals(excludeUsername)) {
+                    try {
+                        c.send(message);
+                    } catch (IOException e) {
+                        System.out.println("Failed to send message to " + c.username);
+                    }
+                }
+            } else {
+                removeList.add(c); // connection is closed, mark for cleanup
+            }
+        }
+
+        // Clean up disconnected clients
+        connectionsInGame.removeAll(removeList);
     }
+
+
 
     public void sendToUser(String username, String message) throws IOException {
         Connection conn = userConnections.get(username);

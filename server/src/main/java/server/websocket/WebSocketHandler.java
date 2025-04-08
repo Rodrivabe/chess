@@ -4,11 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import exception.ResponseException;
+import model.GameData;
+import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -47,7 +51,10 @@ public class WebSocketHandler {
                 case RESIGN -> resign(username, command);
             }
         } catch (JsonSyntaxException | IOException e) {
-            throw new RuntimeException(e);
+            sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
+
+        } catch (ResponseException e) {
+            sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
         }
 
     }
@@ -62,17 +69,17 @@ public class WebSocketHandler {
 
     }
 
-    String getUsername(String authToken) throws DataAccessException{
-        var auth = authDAO.getAuth(authToken);
-        if (auth == null) {
-            throw new DataAccessException("Invalid authToken");
+    String getUsername(String authToken) throws ResponseException{
+
+        try{
+            var auth = authDAO.getAuth(authToken);
+            return auth.username();
+        }catch (ResponseException e){
+            throw new ResponseException(e.statusCode(), e.getMessage());
         }
-        return auth.username();
     }
 
     private void connect(String username, Session session, int gameID) throws IOException {
-        connections.add(gameID, username, session);
-
         String gameJson = loadGameFromDatabase(gameID);
         ServerMessage loadGameMsg = new LoadGameMessage(gameJson);
         String loadGameJson = gson.toJson(loadGameMsg);
@@ -86,8 +93,19 @@ public class WebSocketHandler {
 
 
     private String loadGameFromDatabase(int gameID) {
-        GameData game = gameService
+        try {
+            GameData game = gameService.getGame(gameID);
+            return gson.toJson(game);
+        }catch (ResponseException e){
+            System.out.println("Failed to load game: " + e.getMessage());
+            return "{}";
+        }
 
-        return "{ \"board\": \"[your game state here]\" }";
+
+    }
+
+    private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
+        String json = gson.toJson(message);
+        remote.sendString(json);
     }
 }
