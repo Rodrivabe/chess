@@ -3,7 +3,6 @@ package websocket.messages;
 import com.google.gson.Gson;
 import model.GameData;
 import server.websocket.ConnectionManager;
-import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
@@ -19,7 +18,7 @@ public class LoadGameMessage extends ServerMessage {
         return game;
     }
 
-    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections, String username, UserGameCommand command) throws IOException {
+    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections, String username, UserGameCommand command, String colorFlag) throws IOException {
         UserGameCommand.CommandType commandType = command.getCommandType();
 
         String gameJson = gson.toJson(gameData);
