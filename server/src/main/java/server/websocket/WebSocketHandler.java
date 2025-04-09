@@ -1,8 +1,11 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.AuthDAO;
+import dataaccess.GameDAO;
 import exception.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -26,11 +29,13 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
     private final Gson gson = new Gson();
     private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
     private final GameService gameService;
 
-    public WebSocketHandler(AuthDAO authDAO, GameService gameService){
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, GameService gameService){
         this.authDAO = authDAO;
         this.gameService = gameService;
+        this.gameDAO = gameDAO;
     }
 
 
@@ -46,7 +51,10 @@ public class WebSocketHandler {
             int gameID = command.getGameID();
             switch (type) {
                 case CONNECT -> connect(username, session, gameID, type);
-                case MAKE_MOVE -> makeMove(username, command.getGameID(), command, type);
+                case MAKE_MOVE -> {
+                    MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
+                    makeMove(username, command.getGameID(), moveCommand);
+                }
                 case LEAVE -> leaveGame(username, command.getGameID(), type);
                 case RESIGN -> resign(username, command, type);
             }
@@ -77,10 +85,9 @@ public class WebSocketHandler {
         }catch (ResponseException e){
             throw new ResponseException(e.statusCode(), e.getMessage());
         }
-        String gameJson = gson.toJson(game);
-        ServerMessage loadGameMsg = new LoadGameMessage(gameJson);
-        String loadGameJson = gson.toJson(loadGameMsg);
-        connections.sendToUser(username, loadGameJson);
+
+        LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, type);
+
 
         ServerMessage notification = NotificationMessage.getServerMessage(username, game, type);
         String notificationJson = gson.toJson(notification);
@@ -89,8 +96,25 @@ public class WebSocketHandler {
     }
 
 
-    private void makeMove(String username, Integer gameID, UserGameCommand command, UserGameCommand.CommandType type) {
-        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(command)
+    private void makeMove(String username, Integer gameID, MakeMoveCommand command) throws RuntimeException {
+        GameData game;
+        try {
+            game = gameService.getGame(gameID);
+            ChessGame chessGame = game.game();
+            chessGame.makeMove(command.getMove());
+            GameData updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+
+            gameDAO.updateGame(gameID, updatedGame);
+
+            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command.getCommandType());
+
+        } catch (ResponseException | InvalidMoveException | IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+
+
+
     }
 
     private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
