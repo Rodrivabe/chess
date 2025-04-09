@@ -3,7 +3,6 @@ package server.websocket;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
@@ -19,6 +18,7 @@ import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
+
 
 @WebSocket
 public class WebSocketHandler {
@@ -45,63 +45,52 @@ public class WebSocketHandler {
 
             int gameID = command.getGameID();
             switch (type) {
-                case CONNECT -> connect(username, session, gameID);
-                case MAKE_MOVE -> makeMove(username, command.getGameID(), command);
-                case LEAVE -> leaveGame(username, command.getGameID());
-                case RESIGN -> resign(username, command);
+                case CONNECT -> connect(username, session, gameID, type);
+                case MAKE_MOVE -> makeMove(username, command.getGameID(), command, type);
+                case LEAVE -> leaveGame(username, command.getGameID(), type);
+                case RESIGN -> resign(username, command, type);
             }
-        } catch (JsonSyntaxException | IOException e) {
+        } catch (JsonSyntaxException | IOException | ResponseException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
-
-        } catch (ResponseException e) {
-            sendMessage(session.getRemote(), new ErrorMessage("Error: unauthorized"));
         }
 
     }
 
-    private void resign(String username, UserGameCommand command) {
+    private void resign(String username, UserGameCommand command, UserGameCommand.CommandType type) {
     }
 
-    private void leaveGame(String username, Integer gameID) {
+    private void leaveGame(String username, Integer gameID, UserGameCommand.CommandType type) {
     }
 
-    private void makeMove(String username, Integer gameID, UserGameCommand command) {
-
+    String getUsername(String authToken) throws ResponseException {
+        var auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            throw new ResponseException(401, "Invalid auth token");
+        }
+        return auth.username();
     }
 
-    String getUsername(String authToken) throws ResponseException{
-
-        try{
-            var auth = authDAO.getAuth(authToken);
-            return auth.username();
+    private void connect(String username, Session session, int gameID, UserGameCommand.CommandType type) throws IOException, ResponseException {
+        GameData game;
+        try {
+            game = gameService.getGame(gameID);
         }catch (ResponseException e){
             throw new ResponseException(e.statusCode(), e.getMessage());
         }
-    }
-
-    private void connect(String username, Session session, int gameID) throws IOException {
-        String gameJson = loadGameFromDatabase(gameID);
+        String gameJson = gson.toJson(game);
         ServerMessage loadGameMsg = new LoadGameMessage(gameJson);
         String loadGameJson = gson.toJson(loadGameMsg);
         connections.sendToUser(username, loadGameJson);
 
-        String notifyText = String.format("%s joined the game", username);
-        ServerMessage notification = new NotificationMessage(notifyText);
+        ServerMessage notification = NotificationMessage.getServerMessage(username, game, type);
         String notificationJson = gson.toJson(notification);
+
         connections.broadcast(gameID,notificationJson, username);
     }
 
 
-    private String loadGameFromDatabase(int gameID) {
-        try {
-            GameData game = gameService.getGame(gameID);
-            return gson.toJson(game);
-        }catch (ResponseException e){
-            System.out.println("Failed to load game: " + e.getMessage());
-            return "{}";
-        }
-
-
+    private void makeMove(String username, Integer gameID, UserGameCommand command, UserGameCommand.CommandType type) {
+        MakeMoveCommand makeMoveCommand = new MakeMoveCommand(command)
     }
 
     private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {

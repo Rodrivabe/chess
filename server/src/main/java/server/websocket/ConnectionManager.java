@@ -9,8 +9,8 @@ import websocket.messages.NotificationMessage;
 
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Connection> userConnections = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<Integer, List<Connection>> gameConnections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, List<Connection>> gameConnections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Connection> userConnections = new ConcurrentHashMap<>();
 
 
     public void add(int gameID, String username, Session session) {
