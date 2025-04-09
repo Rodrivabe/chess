@@ -1,6 +1,10 @@
 package websocket.messages;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import model.GameData;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 
 import java.util.Objects;
@@ -18,8 +22,9 @@ public class NotificationMessage extends ServerMessage {
         return message;
     }
 
-    public static ServerMessage getServerMessage(String username, GameData game, UserGameCommand.CommandType commandType) {
+    public static ServerMessage getServerMessage(String username, GameData game, UserGameCommand command) {
         String notifyText = "";
+        UserGameCommand.CommandType commandType = command.getCommandType();
 
         switch (commandType){
             case CONNECT:
@@ -31,6 +36,13 @@ public class NotificationMessage extends ServerMessage {
                 } else if (Objects.equals(game.blackUsername(), username)) {
                     notifyText = String.format("%s joined the game as black", username);
                 }
+            case MAKE_MOVE:
+                MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
+
+                ChessMove move = moveCommand.getMove();
+                ChessPosition startPosition = move.getStartPosition();
+                ChessPosition endPosition = move.getEndPosition();
+                notifyText = String.format("%s moved %s to %s", username, startPosition, endPosition);
         }
 
 

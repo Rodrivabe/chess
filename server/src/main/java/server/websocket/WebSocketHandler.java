@@ -50,13 +50,10 @@ public class WebSocketHandler {
 
             int gameID = command.getGameID();
             switch (type) {
-                case CONNECT -> connect(username, session, gameID, type);
-                case MAKE_MOVE -> {
-                    MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
-                    makeMove(username, command.getGameID(), moveCommand);
-                }
-                case LEAVE -> leaveGame(username, command.getGameID(), type);
-                case RESIGN -> resign(username, command, type);
+                case CONNECT -> connect(username, session, command);
+                case MAKE_MOVE -> makeMove(username, command, message);
+                case LEAVE -> leaveGame(username, command);
+                case RESIGN -> resign(username, command);
             }
         } catch (JsonSyntaxException | IOException | ResponseException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
@@ -64,10 +61,10 @@ public class WebSocketHandler {
 
     }
 
-    private void resign(String username, UserGameCommand command, UserGameCommand.CommandType type) {
+    private void resign(String username, UserGameCommand command) {
     }
 
-    private void leaveGame(String username, Integer gameID, UserGameCommand.CommandType type) {
+    private void leaveGame(String username, UserGameCommand command) {
     }
 
     String getUsername(String authToken) throws ResponseException {
@@ -78,35 +75,45 @@ public class WebSocketHandler {
         return auth.username();
     }
 
-    private void connect(String username, Session session, int gameID, UserGameCommand.CommandType type) throws IOException, ResponseException {
+    private void connect(String username, Session session, UserGameCommand command) throws IOException, ResponseException {
         GameData game;
+        int gameID = command.getGameID();
         try {
             game = gameService.getGame(gameID);
         }catch (ResponseException e){
             throw new ResponseException(e.statusCode(), e.getMessage());
         }
 
-        LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, type);
+        LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, command);
 
 
-        ServerMessage notification = NotificationMessage.getServerMessage(username, game, type);
+        ServerMessage notification = NotificationMessage.getServerMessage(username, game, command);
         String notificationJson = gson.toJson(notification);
 
-        connections.broadcast(gameID,notificationJson, username);
+        connections.broadcast(gameID, notificationJson, username);
     }
 
 
-    private void makeMove(String username, Integer gameID, MakeMoveCommand command) throws RuntimeException {
+    private void makeMove(String username, UserGameCommand command, String message) throws RuntimeException {
         GameData game;
+        int gameID = command.getGameID();
+        MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
+
+
         try {
             game = gameService.getGame(gameID);
             ChessGame chessGame = game.game();
-            chessGame.makeMove(command.getMove());
+            chessGame.makeMove(moveCommand.getMove());
             GameData updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
 
             gameDAO.updateGame(gameID, updatedGame);
 
-            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command.getCommandType());
+            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command);
+
+            ServerMessage notification = NotificationMessage.getServerMessage(username, game, command);
+            String notificationJson = gson.toJson(notification);
+            connections.broadcast(gameID, notificationJson, username);
+
 
         } catch (ResponseException | InvalidMoveException | IOException e) {
             throw new RuntimeException(e.getMessage());

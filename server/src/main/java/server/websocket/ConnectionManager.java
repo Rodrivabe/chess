@@ -57,13 +57,6 @@ public class ConnectionManager {
         }
     }
 
-    public void sendToEveryone(String username, String message) throws IOException {
-        Connection conn = userConnections.get(username);
-        if (conn != null && conn.session.isOpen()) {
-            conn.send(message);
-        }
-    }
-
     public void saveSession(int gameID, String username, Session session) {
         add(gameID, username, session);
     }
