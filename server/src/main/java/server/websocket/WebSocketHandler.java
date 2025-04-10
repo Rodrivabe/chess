@@ -110,11 +110,15 @@ public class WebSocketHandler {
 
     private void connect(String username, UserGameCommand command,
                          ChessGame.TeamColor colorFlag, GameData game) throws IOException, ResponseException {
+
         int gameID = command.getGameID();
 
+        //Server sends a LOAD_GAME message back to the root client.
         LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, command);
         sessionState.gameState = GameState.PLAYING;
 
+        // Server sends a Notification message to all other clients in that game informing them the root client
+        // connected to the game, either as a player (in which case their color must be specified) or as an observer.
         NotificationMessage notification = NotificationMessage.getServerMessage(username, game, command, "",
                 colorFlag, null);
         NotificationMessage.sendNotification(notification, connections, gameID, username);
@@ -186,7 +190,8 @@ public class WebSocketHandler {
 
 
 
-    private void leaveGame(String username, UserGameCommand command, ChessGame.TeamColor teamColor, GameData game) throws ResponseException {
+    private void leaveGame(String username, UserGameCommand command, ChessGame.TeamColor teamColor,
+                           GameData game) throws ResponseException {
         int gameID = command.getGameID();
         connections.remove(gameID, username);
         GameData updatedGame = game;
@@ -202,16 +207,16 @@ public class WebSocketHandler {
         //Game is updated in the database.
         gameDAO.updateGame(gameID, updatedGame);
 
-        //Server sends a Notification message to all other clients in that game informing them that the root client left. This applies to both players and observers.
-        NotificationMessage leaveNotification = NotificationMessage.getServerMessage(username, updatedGame, command, "", teamColor, "");
+        //Server sends a Notification message to all other clients in that game informing them that the root
+        // client left. This applies to both players and observers.
+        NotificationMessage leaveNotification = NotificationMessage.getServerMessage(username, updatedGame,
+                command, "", teamColor, "");
         NotificationMessage.sendNotification(leaveNotification, connections, gameID, username);
-
-
 
     }
 
-
-    private void resign(String username, UserGameCommand command, ChessGame.TeamColor teamColor, GameData game) throws ResponseException {
+    private void resign(String username, UserGameCommand command, ChessGame.TeamColor teamColor, GameData game)
+            throws ResponseException {
         int gameID = command.getGameID();
 
         //Server marks the game as over
@@ -229,8 +234,10 @@ public class WebSocketHandler {
 
         gameDAO.updateGame(gameID, updatedGame);
 
-        //Server sends a Notification message to all clients in that game informing them that the root client resigned. This applies to both players and observers.
-        NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game, command, "", teamColor, "");
+        //Server sends a Notification message to all clients in that game informing them that the root client resigned.
+        // This applies to both players and observers.
+        NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game,
+                command, "", teamColor, "");
         NotificationMessage.sendNotification(resignNotification, connections, gameID, null);
     }
 
@@ -243,8 +250,6 @@ public class WebSocketHandler {
         }
         return playerColor;
     }
-
-
 
 
     private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
