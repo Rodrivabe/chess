@@ -1,5 +1,5 @@
 package server.websocket;
 
 public class WebSocketSessionState {
-    public State state = State.LOGEDOUT;
+    public GameState gameState = GameState.PLAYING;
 }

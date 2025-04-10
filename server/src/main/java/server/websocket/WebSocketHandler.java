@@ -34,14 +34,15 @@ public class WebSocketHandler {
     private final Gson gson = new Gson();
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
+    private final WebSocketSessionState sessionState;
     private final GameService gameService;
-    private static GameState gameState;
 
-    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, GameService gameService){
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, GameService gameService, WebSocketSessionState sessionState){
         this.authDAO = authDAO;
         this.gameService = gameService;
         this.gameDAO = gameDAO;
-        gameState = GameState.PLAYING;
+
+        this.sessionState = sessionState;
     }
 
 
@@ -69,9 +70,13 @@ public class WebSocketHandler {
             switch (type) {
                 case CONNECT -> connect(username, session, command, colorFlag, game);
                 case MAKE_MOVE -> {
+                    if (sessionState.gameState == GameState.GAME_OVER){
+                        throw new InvalidMoveException("The game is Over");
+                    }
                     if(Objects.equals(colorFlag, "OBSERVER")){
                         throw new InvalidMoveException("You are an observer. You can't make moves");
                     }
+
                     makeMove(username, command, message, colorFlag, game);
                 }
 
@@ -100,7 +105,7 @@ public class WebSocketHandler {
         int gameID = command.getGameID();
 
         LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, command, colorFlag);
-
+        sessionState.gameState = GameState.PLAYING;
 
         ServerMessage notification = NotificationMessage.getServerMessage(username, game, command, "", colorFlag);
         String notificationJson = gson.toJson(notification);
@@ -114,7 +119,7 @@ public class WebSocketHandler {
 
         MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
         int gameID = moveCommand.getGameID();
-
+        sessionState.gameState = GameState.PLAYING;
 
         ChessGame chessGame = game.game();
         ChessGame.TeamColor teamTurn = chessGame.getTeamTurn();
@@ -122,25 +127,49 @@ public class WebSocketHandler {
                 || (Objects.equals(colorFlag, "BLACK") && teamTurn != BLACK)){
             throw new InvalidMoveException("It's not your turn!");
         }
+
+        //Server verifies validity of move
         chessGame.makeMove(moveCommand.getMove());
-        GameData updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game());
+
+
+        GameData updatedGame = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(),
+                chessGame);
 
         gameDAO.updateGame(gameID, updatedGame);
+        ChessGame updatedChessGame = updatedGame.game();
+
 
         LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command, "");
-        if(chessGame.isInCheck(teamTurn)){
-            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command, "inCheck");
-        } else if (chessGame.isInCheckmate(teamTurn)) {
-            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command, "inCheckMate");
-            gameState = GameState.GAME_OVER;
-        } else if (chessGame.isInStalemate(teamTurn)) {
-            LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command, "inStaleMate");
+
+        ServerMessage notification = NotificationMessage.getServerMessage(username, game, command, message, "");
+        String notificationJson = gson.toJson(notification);
+        connections.broadcast(gameID, notificationJson, username);
+
+        if(updatedChessGame.isInCheck(teamTurn)){
+            ServerMessage notification_inCheck = NotificationMessage.getServerMessage(username, game, command, message,
+                    "inCheck");
+            String notificationJsonInCheck = gson.toJson(notification_inCheck);
+            connections.broadcast(gameID, notificationJsonInCheck, username);
+
+        } else if (updatedChessGame.isInCheckmate(teamTurn)) {
+            ServerMessage notification_inCheckMate = NotificationMessage.getServerMessage(username, game, command,
+                    message,
+                    "inCheckMate");
+            String notificationJsonInMate = gson.toJson(notification_inCheckMate);
+            connections.broadcast(gameID, notificationJsonInMate, username);
+            sessionState.gameState = GameState.GAME_OVER;
+        } else if (updatedChessGame.isInStalemate(teamTurn)) {
+            ServerMessage notification_inStaleMate = NotificationMessage.getServerMessage(username, game, command,
+                    message,
+                    "inStaleMate");
+            String notificationJsonInStale = gson.toJson(notification_inStaleMate);
+            connections.broadcast(gameID, notificationJsonInStale, username);
+            sessionState.gameState = GameState.GAME_OVER;
+
         }
 
 
-        ServerMessage notification = NotificationMessage.getServerMessage(username, game, command, message, colorFlag);
-        String notificationJson = gson.toJson(notification);
-        connections.broadcast(gameID, notificationJson, username);
+
 
 
 
