@@ -1,13 +1,13 @@
-package websocket.messages;
+package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
-import websocket.ConnectionManager;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 public class NotificationMessage extends ServerMessage {
 

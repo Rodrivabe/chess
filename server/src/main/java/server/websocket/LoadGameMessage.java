@@ -1,9 +1,9 @@
-package websocket.messages;
+package server.websocket;
 
 import com.google.gson.Gson;
 import model.GameData;
-import websocket.ConnectionManager;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 

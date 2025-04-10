@@ -1,6 +1,6 @@
 package websocket;
 
-import websocket.messages.NotificationMessage;
+import server.websocket.NotificationMessage;
 
 public interface NotificationHandler {
     void notify(NotificationMessage notification);
