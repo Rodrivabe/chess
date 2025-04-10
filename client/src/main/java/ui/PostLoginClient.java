@@ -9,9 +9,7 @@ import results.CreateGameResult;
 import results.ListGamesResult;
 import server.ServerFacade;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;

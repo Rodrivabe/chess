@@ -1,18 +1,12 @@
 package ui;
 
 import chess.ChessGame;
-import exception.ResponseException;
 import model.GameData;
-import requests.JoinGameRequest;
 import server.ServerFacade;
-import websocket.commands.UserGameCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-
-import static chess.ChessGame.TeamColor.WHITE;
-import static chess.ChessGame.TeamColor.BLACK;
 
 public class GamePlayClient {
     private final ServerFacade server;

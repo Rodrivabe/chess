@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessGame;
 import exception.ResponseException;
 import org.junit.jupiter.api.*;
 import requests.CreateGameRequest;

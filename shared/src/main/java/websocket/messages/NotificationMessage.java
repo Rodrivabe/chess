@@ -6,12 +6,8 @@ import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
 import server.websocket.ConnectionManager;
-import server.websocket.GameState;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-
-
-import java.util.Objects;
 
 public class NotificationMessage extends ServerMessage {
 

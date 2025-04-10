@@ -1,7 +1,6 @@
 package ui;
 
 import exception.ResponseException;
-import model.UserData;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import results.LoginResult;
@@ -9,10 +8,6 @@ import results.RegisterResult;
 import server.ServerFacade;
 
 import java.util.Arrays;
-import java.util.Scanner;
-
-import static ui.EscapeSequences.GREEN;
-import static ui.EscapeSequences.RESET;
 
 public class PreLogInClient {
     private String visitorName = null;
