@@ -39,6 +39,7 @@ public class GamePlayClient {
             case "resign" -> resign(params);
             case "showMoves" -> showMoves(params);
             default -> help();
+
         };
 
     }
