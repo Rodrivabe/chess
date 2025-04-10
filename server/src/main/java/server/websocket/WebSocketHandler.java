@@ -15,6 +15,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessGame.TeamColor.BLACK;
@@ -29,7 +30,7 @@ import java.util.Objects;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
-    private final Gson gson = new Gson();
+    private static final Gson gson = new Gson();
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private final WebSocketSessionState sessionState;
@@ -119,7 +120,7 @@ public class WebSocketHandler {
         // connected to the game, either as a player (in which case their color must be specified) or as an observer.
         NotificationMessage notification = NotificationMessage.getServerMessage(username, game, command, "",
                 colorFlag, null);
-        NotificationMessage.sendNotification(notification, connections, gameID, username);
+        sendNotification(notification, connections, gameID, username);
 
     }
 
@@ -156,7 +157,7 @@ public class WebSocketHandler {
         //Server sends a Notification message to all other clients in that game informing them what move was made.
         NotificationMessage notification = NotificationMessage.getServerMessage(username, game,
                 command, message, null, "");
-        NotificationMessage.sendNotification(notification, connections, gameID, username);
+        sendNotification(notification, connections, gameID, username);
 
         ChessGame.TeamColor opponentColor = (teamColor == WHITE) ? BLACK : WHITE;
 
@@ -164,21 +165,22 @@ public class WebSocketHandler {
         if(updatedChessGame.isInCheck(opponentColor)){
             NotificationMessage notification_inCheck = NotificationMessage.getServerMessage(username, game,
                     command, message, null, "inCheck");
-            NotificationMessage.sendNotification(notification_inCheck, connections, gameID, null);
+            sendNotification(notification_inCheck, connections, gameID, null);
 
 
         } else if (updatedChessGame.isInCheckmate(opponentColor)) {
             NotificationMessage notification_inCheckMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inCheckMate");
-            NotificationMessage.sendNotification(notification_inCheckMate, connections, gameID, null);
+            sendNotification(notification_inCheckMate, connections, gameID, null);
 
             sessionState.gameState = GameState.GAME_OVER;
         } else if (updatedChessGame.isInStalemate(opponentColor)) {
             NotificationMessage notification_inStaleMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inStaleMate");
-            NotificationMessage.sendNotification(notification_inStaleMate, connections, gameID, null);
+
+            sendNotification(notification_inStaleMate, connections, gameID, null);
             sessionState.gameState = GameState.GAME_OVER;
 
         }
@@ -209,7 +211,7 @@ public class WebSocketHandler {
         // client left. This applies to both players and observers.
         NotificationMessage leaveNotification = NotificationMessage.getServerMessage(username, updatedGame,
                 command, "", teamColor, "");
-        NotificationMessage.sendNotification(leaveNotification, connections, gameID, username);
+        sendNotification(leaveNotification, connections, gameID, username);
 
     }
 
@@ -236,7 +238,7 @@ public class WebSocketHandler {
         // This applies to both players and observers.
         NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game,
                 command, "", teamColor, "");
-        NotificationMessage.sendNotification(resignNotification, connections, gameID, null);
+        sendNotification(resignNotification, connections, gameID, null);
     }
 
     private ChessGame.TeamColor getUsersColor(String username, GameData game) {
@@ -253,5 +255,10 @@ public class WebSocketHandler {
     private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
         String json = gson.toJson(message);
         remote.sendString(json);
+    }
+
+    public static void sendNotification(NotificationMessage notification, ConnectionManager connections, int gameID, String username){
+        String notificationJsonInMate = gson.toJson(notification);
+        connections.broadcast(gameID, notificationJsonInMate, username);
     }
 }

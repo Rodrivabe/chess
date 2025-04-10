@@ -1,4 +1,4 @@
-package server.websocket;
+package websocket.messages;
 
 import chess.ChessGame;
 import chess.ChessMove;
@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import model.GameData;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
 
 public class NotificationMessage extends ServerMessage {
 
@@ -70,8 +69,5 @@ public class NotificationMessage extends ServerMessage {
         return new NotificationMessage(notifyText);
     }
 
-    public static void sendNotification(NotificationMessage notification, ConnectionManager connections, int gameID, String username){
-        String notificationJsonInMate = gson.toJson(notification);
-        connections.broadcast(gameID, notificationJsonInMate, username);
-    }
+
 }
