@@ -163,7 +163,7 @@ public class PostLoginClient {
             JoinGameRequest request = new JoinGameRequest(color, selectedGame.gameID());
             server.joinGame(request, session.authToken);
 
-            session.state = State.PLAYING;
+            session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = color;
 
@@ -205,7 +205,7 @@ public class PostLoginClient {
                 return "Game not found at that number.";
             }
 
-            session.state = State.PLAYING;
+            session.state = State.LOGEDIN;
             session.currentGameId = selectedGame.gameID();
             session.playerColor = null;
 
