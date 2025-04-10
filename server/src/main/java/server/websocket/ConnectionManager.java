@@ -21,7 +21,7 @@ public class ConnectionManager {
 
     public void remove(int gameID, String username) {
         var connectionsInGame = gameConnections.get(gameID);
-        if (connectionsInGame == null) return;
+        if (connectionsInGame == null) {return;}
 
         connectionsInGame.removeIf(conn -> conn.username.equals(username));
     }

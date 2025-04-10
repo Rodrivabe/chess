@@ -30,7 +30,7 @@ import java.util.Objects;
 public class WebSocketHandler {
 
     private final ConnectionManager connections = new ConnectionManager();
-    private static final Gson gson = new Gson();
+    private  final Gson gSon = new Gson();
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private final WebSocketSessionState sessionState;
@@ -113,7 +113,7 @@ public class WebSocketHandler {
         int gameID = command.getGameID();
 
         //Server sends a LOAD_GAME message back to the root client.
-        LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, command);
+        LoadGameMessage.sendLoadGameMessage(gSon, game, connections, username, command);
         sessionState.gameState = GameState.PLAYING;
 
         // Server sends a Notification message to all other clients in that game informing them the root client
@@ -129,7 +129,7 @@ public class WebSocketHandler {
                           String message, ChessGame.TeamColor teamColor, GameData game)
             throws InvalidMoveException, ResponseException, IOException {
 
-        MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
+        MakeMoveCommand moveCommand = gSon.fromJson(message, MakeMoveCommand.class);
         int gameID = moveCommand.getGameID();
         sessionState.gameState = GameState.PLAYING;
 
@@ -152,7 +152,7 @@ public class WebSocketHandler {
         ChessGame updatedChessGame = updatedGame.game();
 
         //Server sends a LOAD_GAME message to all clients in the game (including the root client) with an updated game.
-        LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command);
+        LoadGameMessage.sendLoadGameMessage(gSon, updatedGame, connections, username, command);
 
         //Server sends a Notification message to all other clients in that game informing them what move was made.
         NotificationMessage notification = NotificationMessage.getServerMessage(username, game,
@@ -163,24 +163,24 @@ public class WebSocketHandler {
 
         //If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
         if(updatedChessGame.isInCheck(opponentColor)){
-            NotificationMessage notification_inCheck = NotificationMessage.getServerMessage(username, game,
+            NotificationMessage notificationInCheck = NotificationMessage.getServerMessage(username, game,
                     command, message, null, "inCheck");
-            sendNotification(notification_inCheck, connections, gameID, null);
+            sendNotification(notificationInCheck, connections, gameID, null);
 
 
         } else if (updatedChessGame.isInCheckmate(opponentColor)) {
-            NotificationMessage notification_inCheckMate = NotificationMessage.getServerMessage(username, game, command,
+            NotificationMessage notificationInCheckMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inCheckMate");
-            sendNotification(notification_inCheckMate, connections, gameID, null);
+            sendNotification(notificationInCheckMate, connections, gameID, null);
 
             sessionState.gameState = GameState.GAME_OVER;
         } else if (updatedChessGame.isInStalemate(opponentColor)) {
-            NotificationMessage notification_inStaleMate = NotificationMessage.getServerMessage(username, game, command,
+            NotificationMessage notificationInStaleMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inStaleMate");
 
-            sendNotification(notification_inStaleMate, connections, gameID, null);
+            sendNotification(notificationInStaleMate, connections, gameID, null);
             sessionState.gameState = GameState.GAME_OVER;
 
         }
@@ -253,12 +253,12 @@ public class WebSocketHandler {
 
 
     private void sendMessage(RemoteEndpoint remote, ServerMessage message) throws IOException {
-        String json = gson.toJson(message);
+        String json = gSon.toJson(message);
         remote.sendString(json);
     }
 
-    public static void sendNotification(NotificationMessage notification, ConnectionManager connections, int gameID, String username){
-        String notificationJsonInMate = gson.toJson(notification);
+    public void sendNotification(NotificationMessage notification, ConnectionManager connections, int gameID, String username){
+        String notificationJsonInMate = gSon.toJson(notification);
         connections.broadcast(gameID, notificationJsonInMate, username);
     }
 }
