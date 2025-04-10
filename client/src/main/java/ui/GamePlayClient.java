@@ -59,28 +59,6 @@ public class GamePlayClient {
 
     private String leave(String[] params) {
 
-//        var leaveCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, session.authToken, session.currentGameId);
-//        session.ws.send(leaveCommand);
-//        var gameList = session.lastGameList;
-//        int gameNumber = session.currentGameId;
-//        GameData gameToLeave = null;
-//        int i = 0;
-//        for(GameData game : gameList){
-//            if (i == gameNumber - 1) {
-//                gameToLeave = game;
-//                break;
-//            }
-//            i++;
-//        }
-//        session.state = State.LOGEDIN;
-//        if (session.playerColor.equals("WHITE")) {
-//            gameToLeave.whiteUsername() = null;
-//        } else if ("BLACK".equals(session.playerColor)) {
-//            color = BLACK;
-//        } else {
-//            return "Invalid color. Choose WHITE or BLACK.";
-//        }
-
 
         return "";
     }
