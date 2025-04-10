@@ -1,5 +1,6 @@
 package websocket.messages;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import server.websocket.ConnectionManager;
@@ -18,7 +19,7 @@ public class LoadGameMessage extends ServerMessage {
         return game;
     }
 
-    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections, String username, UserGameCommand command, String colorFlag) throws IOException {
+    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections, String username, UserGameCommand command) throws IOException {
         UserGameCommand.CommandType commandType = command.getCommandType();
 
         String gameJson = gson.toJson(gameData);
@@ -27,8 +28,7 @@ public class LoadGameMessage extends ServerMessage {
         switch (commandType){
             case CONNECT -> connections.sendToUser(username, loadGameJson);
             case MAKE_MOVE -> {
-                connections.sendToUser(username, loadGameJson);
-                connections. broadcast(gameData.gameID(), loadGameJson, username);
+                connections. broadcast(gameData.gameID(), loadGameJson, null);
             }
         }
     }

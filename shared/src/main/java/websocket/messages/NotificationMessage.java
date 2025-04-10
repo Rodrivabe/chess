@@ -1,5 +1,6 @@
 package websocket.messages;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
@@ -23,17 +24,16 @@ public class NotificationMessage extends ServerMessage {
         return message;
     }
 
-    public static ServerMessage getServerMessage(String username, GameData game, UserGameCommand command, String message, String colorFlagOrCheck) {
+    public static ServerMessage getServerMessage(String username, GameData game, UserGameCommand command, String message, ChessGame.TeamColor color, String check) {
         String notifyText = "";
         UserGameCommand.CommandType commandType = command.getCommandType();
 
         switch (commandType){
             case CONNECT:
-                notifyText = switch (colorFlagOrCheck) {
-                    case "OBSERVER" -> String.format("%s joined the game as an observer", username);
-                    case "WHITE" -> String.format("%s joined the game as white", username);
-                    case "BLACK" -> String.format("%s joined the game as black", username);
-                    default -> notifyText;
+                notifyText = switch (color) {
+                    case null -> String.format("%s joined the game as an observer", username);
+                    case WHITE -> String.format("%s joined the game as white", username);
+                    case BLACK -> String.format("%s joined the game as black", username);
                 };
                 break;
             case MAKE_MOVE:
@@ -44,7 +44,7 @@ public class NotificationMessage extends ServerMessage {
                 ChessPosition startPosition = move.getStartPosition();
                 ChessPosition endPosition = move.getEndPosition();
 
-                notifyText = switch (colorFlagOrCheck) {
+                notifyText = switch (check) {
                     case "inCheck" -> String.format("%s is in Check", username);
                     case "inCheckMate" -> String.format("%s is in Check mate", username);
                     case "inStaleMate" -> String.format("%s is in Stale mate", username);
