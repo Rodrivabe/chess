@@ -28,7 +28,7 @@ public class ConnectionManager {
 
     public void broadcast(int gameID, String message, String excludeUsername) {
         var connectionsInGame = gameConnections.get(gameID);
-        if (connectionsInGame == null) return;
+        if (connectionsInGame == null) {return;}
 
         var removeList = new ArrayList<Connection>();
 

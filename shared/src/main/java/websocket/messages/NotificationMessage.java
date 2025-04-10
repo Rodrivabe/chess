@@ -11,7 +11,6 @@ import websocket.commands.UserGameCommand;
 public class NotificationMessage extends ServerMessage {
 
     private final String message;
-    private static final Gson gson = new Gson();
 
     public NotificationMessage(String message){
         super(ServerMessageType.NOTIFICATION);
@@ -56,15 +55,7 @@ public class NotificationMessage extends ServerMessage {
             case RESIGN:
                 notifyText = String.format("%s has resigned the game", username);
                 break;
-
-
-
         }
-
-
-
-
-
 
         return new NotificationMessage(notifyText);
     }
