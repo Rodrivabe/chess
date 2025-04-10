@@ -19,12 +19,14 @@ public class LoadGameMessage extends ServerMessage {
         return game;
     }
 
-    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections, String username, UserGameCommand command) throws IOException {
+    public static void sendLoadGameMessage(Gson gson, GameData gameData, ConnectionManager connections,
+                                           String username, UserGameCommand command) throws IOException {
         UserGameCommand.CommandType commandType = command.getCommandType();
 
         String gameJson = gson.toJson(gameData);
         ServerMessage loadGameMsg = new LoadGameMessage(gameJson);
         String loadGameJson = gson.toJson(loadGameMsg);
+
         switch (commandType){
             case CONNECT -> connections.sendToUser(username, loadGameJson);
             case MAKE_MOVE -> connections.broadcast(gameData.gameID(), loadGameJson, null);

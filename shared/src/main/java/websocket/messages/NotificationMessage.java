@@ -27,7 +27,8 @@ public class NotificationMessage extends ServerMessage {
         return message;
     }
 
-    public static NotificationMessage getServerMessage(String username, GameData game, UserGameCommand command, String message, ChessGame.TeamColor color, String check) {
+    public static NotificationMessage getServerMessage(String username, GameData game, UserGameCommand command,
+                                                       String message, ChessGame.TeamColor color, String check) {
         String notifyText = "";
         UserGameCommand.CommandType commandType = command.getCommandType();
 
