@@ -37,7 +37,8 @@ public class WebSocketHandler {
     private final WebSocketSessionState sessionState;
     private final GameService gameService;
 
-    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO, GameService gameService, WebSocketSessionState sessionState){
+    public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO,
+                            GameService gameService, WebSocketSessionState sessionState){
         this.authDAO = authDAO;
         this.gameService = gameService;
         this.gameDAO = gameDAO;
@@ -68,20 +69,20 @@ public class WebSocketHandler {
             connections.saveSession(command.getGameID(), username, session);
 
             switch (type) {
-                case CONNECT -> connect(username, session, command, colorFlag, game);
+                case CONNECT -> connect(username, command, colorFlag, game);
                 case MAKE_MOVE -> {
                     if (sessionState.gameState == GameState.GAME_OVER){
                         throw new InvalidMoveException("The game is Over");
                     }
-                    if(Objects.equals(colorFlag, null)){
+                    if (colorFlag == null){
                         throw new InvalidMoveException("You are an observer. You can't make moves");
                     }
 
                     makeMove(username, command, message, colorFlag, game);
                 }
 
-                case LEAVE -> leaveGame(username, command, colorFlag);
-                case RESIGN -> resign(username, command, colorFlag);
+                case LEAVE -> leaveGame(username, command, colorFlag, game);
+                case RESIGN -> resign(username, command, colorFlag, game);
             }
         } catch (JsonSyntaxException | IOException | ResponseException | InvalidMoveException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
@@ -99,21 +100,22 @@ public class WebSocketHandler {
         return auth.username();
     }
 
-    private void connect(String username, Session session, UserGameCommand command, ChessGame.TeamColor colorFlag, GameData game) throws IOException, ResponseException {
+    private void connect(String username, UserGameCommand command,
+                         ChessGame.TeamColor colorFlag, GameData game) throws IOException, ResponseException {
         int gameID = command.getGameID();
 
         LoadGameMessage.sendLoadGameMessage(gson, game, connections, username, command);
         sessionState.gameState = GameState.PLAYING;
 
-        ServerMessage notification = NotificationMessage.getServerMessage(username, game, command, "",
+        NotificationMessage notification = NotificationMessage.getServerMessage(username, game, command, "",
                 colorFlag, null);
-        String notificationJson = gson.toJson(notification);
+        NotificationMessage.sendNotification(notification, connections, gameID, username);
 
-        connections.broadcast(gameID, notificationJson, username);
     }
 
 
-    private void makeMove(String username, UserGameCommand command, String message, ChessGame.TeamColor teamColor, GameData game)
+    private void makeMove(String username, UserGameCommand command,
+                          String message, ChessGame.TeamColor teamColor, GameData game)
             throws InvalidMoveException, ResponseException, IOException {
 
         MakeMoveCommand moveCommand = gson.fromJson(message, MakeMoveCommand.class);
@@ -142,36 +144,77 @@ public class WebSocketHandler {
         LoadGameMessage.sendLoadGameMessage(gson, updatedGame, connections, username, command);
 
         //Server sends a Notification message to all other clients in that game informing them what move was made.
-        ServerMessage notification = NotificationMessage.getServerMessage(username, game, command, message, null, "");
-        String notificationJson = gson.toJson(notification);
-        connections.broadcast(gameID, notificationJson, username);
+        NotificationMessage notification = NotificationMessage.getServerMessage(username, game,
+                command, message, null, "");
+        NotificationMessage.sendNotification(notification, connections, gameID, username);
+
         ChessGame.TeamColor opponentColor = (teamColor == WHITE) ? BLACK : WHITE;
 
-
+        //If the move results in check, checkmate or stalemate the server sends a Notification message to all clients.
         if(updatedChessGame.isInCheck(opponentColor)){
-            ServerMessage notification_inCheck = NotificationMessage.getServerMessage(username, game, command, message,
-                    null, "inCheck");
-            String notificationJsonInCheck = gson.toJson(notification_inCheck);
-            connections.broadcast(gameID, notificationJsonInCheck, null);
+            NotificationMessage notification_inCheck = NotificationMessage.getServerMessage(username, game,
+                    command, message, null, "inCheck");
+            NotificationMessage.sendNotification(notification_inCheck, connections, gameID, null);
+
 
         } else if (updatedChessGame.isInCheckmate(opponentColor)) {
-            ServerMessage notification_inCheckMate = NotificationMessage.getServerMessage(username, game, command,
+            NotificationMessage notification_inCheckMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inCheckMate");
-            String notificationJsonInMate = gson.toJson(notification_inCheckMate);
-            connections.broadcast(gameID, notificationJsonInMate, null);
+            NotificationMessage.sendNotification(notification_inCheckMate, connections, gameID, null);
+
             sessionState.gameState = GameState.GAME_OVER;
         } else if (updatedChessGame.isInStalemate(opponentColor)) {
-            ServerMessage notification_inStaleMate = NotificationMessage.getServerMessage(username, game, command,
+            NotificationMessage notification_inStaleMate = NotificationMessage.getServerMessage(username, game, command,
                     message,
                     null, "inStaleMate");
-            String notificationJsonInStale = gson.toJson(notification_inStaleMate);
-            connections.broadcast(gameID, notificationJsonInStale, null);
+            NotificationMessage.sendNotification(notification_inStaleMate, connections, gameID, null);
             sessionState.gameState = GameState.GAME_OVER;
 
         }
 
 
+    }
+
+
+
+    private void leaveGame(String username, UserGameCommand command, ChessGame.TeamColor teamColor, GameData game) throws ResponseException {
+        int gameID = command.getGameID();
+        connections.remove(gameID, username);
+        GameData updatedGame = game;
+
+        //If a player is leaving, then the game is updated to remove the root client
+        if(teamColor == WHITE){
+            updatedGame = new GameData(gameID, null, game.blackUsername(), game.gameName(),
+                    game.game());
+        } else if (teamColor == BLACK) {
+            updatedGame = new GameData(gameID, game.whiteUsername(), null, game.gameName(),
+                    game.game());
+        }
+        //Game is updated in the database.
+        gameDAO.updateGame(gameID, updatedGame);
+
+        //Server sends a Notification message to all other clients in that game informing them that the root client left. This applies to both players and observers.
+        NotificationMessage leaveNotification = NotificationMessage.getServerMessage(username, updatedGame, command, "", teamColor, "");
+        NotificationMessage.sendNotification(leaveNotification, connections, gameID, username);
+
+
+
+    }
+
+
+    private void resign(String username, UserGameCommand command, ChessGame.TeamColor colorFlag, GameData game) throws ResponseException {
+        int gameID = command.getGameID();
+
+        //Server marks the game as over
+        sessionState.gameState = GameState.GAME_OVER;
+
+        //Game is updated in the database.
+        gameDAO.updateGame(gameID, game);
+
+        //Server sends a Notification message to all clients in that game informing them that the root client resigned. This applies to both players and observers.
+        NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game, command, "", colorFlag, "");
+        NotificationMessage.sendNotification(resignNotification, connections, gameID, username);
     }
 
     private ChessGame.TeamColor getUsersColor(String username, GameData game) {
@@ -184,13 +227,6 @@ public class WebSocketHandler {
         return playerColor;
     }
 
-
-    private void leaveGame(String username, UserGameCommand command, ChessGame.TeamColor colorFlag) {
-    }
-
-
-    private void resign(String username, UserGameCommand command, ChessGame.TeamColor colorFlag) {
-    }
 
 
 

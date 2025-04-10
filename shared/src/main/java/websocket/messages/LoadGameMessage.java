@@ -27,9 +27,7 @@ public class LoadGameMessage extends ServerMessage {
         String loadGameJson = gson.toJson(loadGameMsg);
         switch (commandType){
             case CONNECT -> connections.sendToUser(username, loadGameJson);
-            case MAKE_MOVE -> {
-                connections. broadcast(gameData.gameID(), loadGameJson, null);
-            }
+            case MAKE_MOVE -> connections.broadcast(gameData.gameID(), loadGameJson, null);
         }
     }
 }

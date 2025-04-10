@@ -5,6 +5,8 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.GameData;
+import server.websocket.ConnectionManager;
+import server.websocket.GameState;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 
@@ -14,6 +16,7 @@ import java.util.Objects;
 public class NotificationMessage extends ServerMessage {
 
     private final String message;
+    private static final Gson gson = new Gson();
 
     public NotificationMessage(String message){
         super(ServerMessageType.NOTIFICATION);
@@ -24,7 +27,7 @@ public class NotificationMessage extends ServerMessage {
         return message;
     }
 
-    public static ServerMessage getServerMessage(String username, GameData game, UserGameCommand command, String message, ChessGame.TeamColor color, String check) {
+    public static NotificationMessage getServerMessage(String username, GameData game, UserGameCommand command, String message, ChessGame.TeamColor color, String check) {
         String notifyText = "";
         UserGameCommand.CommandType commandType = command.getCommandType();
 
@@ -51,10 +54,23 @@ public class NotificationMessage extends ServerMessage {
                     default -> String.format("%s moved %s to %s", username, startPosition, endPosition);
                 };
                 break;
+            case LEAVE:
+                String.format("%s has left the game", username);
+                break;
+
 
         }
 
 
+
+
+
+
         return new NotificationMessage(notifyText);
+    }
+
+    public static void sendNotification(NotificationMessage notification, ConnectionManager connections, int gameID, String username){
+        String notificationJsonInMate = gson.toJson(notification);
+        connections.broadcast(gameID, notificationJsonInMate, username);
     }
 }

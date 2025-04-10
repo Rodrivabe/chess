@@ -20,8 +20,11 @@ public class ConnectionManager {
         gameConnections.get(gameID).add(connection);
     }
 
-    public void remove(int gameID) {
+    public void remove(int gameID, String username) {
+        var connectionsInGame = gameConnections.get(gameID);
+        if (connectionsInGame == null) return;
 
+        connectionsInGame.removeIf(conn -> conn.username.equals(username));
     }
 
     public void broadcast(int gameID, String message, String excludeUsername) {
@@ -58,6 +61,7 @@ public class ConnectionManager {
     }
 
     public void saveSession(int gameID, String username, Session session) {
+        remove(gameID, username);
         add(gameID, username, session);
     }
 
