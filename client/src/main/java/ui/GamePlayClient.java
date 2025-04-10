@@ -43,47 +43,9 @@ public class GamePlayClient {
 
     }
 
-    private String showMoves(String[] params) {
-        return "";
-    }
-
-    private String resign(String[] params) {
-        return "";
-    }
-
-    private String move() {
-        return "";
-    }
-
-    private String leave(String[] params) {
-
-        var leaveCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, session.authToken, session.currentGameId);
-        session.ws.send(leaveCommand)
-        var gameList = session.lastGameList;
-        int gameNumber = session.currentGameId;
-        GameData gameToLeave = null;
-        int i = 0;
-        for(GameData game : gameList){
-            if (i == gameNumber - 1) {
-                gameToLeave = game;
-                break;
-            }
-            i++;
-        }
-        session.state = State.LOGEDIN;
-        if (session.playerColor.equals("WHITE")) {
-            gameToLeave.whiteUsername() = null;
-        } else if ("BLACK".equals(session.playerColor)) {
-            color = BLACK;
-        } else {
-            return "Invalid color. Choose WHITE or BLACK.";
-        }
-
-
-    }
 
     private String redraw() {
-        try{
+        try {
             ChessGame currentGame = session.game;
             session.state = State.PLAYING;
             boardPrinter.printBoard(currentGame);
@@ -91,10 +53,53 @@ public class GamePlayClient {
 
 
         } catch (Exception e) {
-        return "Could not connect to server: " + e.getMessage();
+            return "Could not connect to server: " + e.getMessage();
+        }
     }
 
-    private String help() {
+    private String leave(String[] params) {
+
+//        var leaveCommand = new UserGameCommand(UserGameCommand.CommandType.LEAVE, session.authToken, session.currentGameId);
+//        session.ws.send(leaveCommand);
+//        var gameList = session.lastGameList;
+//        int gameNumber = session.currentGameId;
+//        GameData gameToLeave = null;
+//        int i = 0;
+//        for(GameData game : gameList){
+//            if (i == gameNumber - 1) {
+//                gameToLeave = game;
+//                break;
+//            }
+//            i++;
+//        }
+//        session.state = State.LOGEDIN;
+//        if (session.playerColor.equals("WHITE")) {
+//            gameToLeave.whiteUsername() = null;
+//        } else if ("BLACK".equals(session.playerColor)) {
+//            color = BLACK;
+//        } else {
+//            return "Invalid color. Choose WHITE or BLACK.";
+//        }
+
+
+        return "";
+    }
+
+    private String move() {
+        return "";
+    }
+
+    private String resign(String[] params) {
+        return null;
+    }
+
+    private String showMoves(String[] params) {
+        return "";
+    }
+
+
+
+    public String help() {
         return """
                     
                     - redraw - the chess board

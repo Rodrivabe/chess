@@ -37,10 +37,6 @@ public class Repl {
                         result = postLoginClient.eval(line);
                         System.out.print(BLUE + result);
                         break;
-                    case PLAYING:
-                        result = gamePlayClient.eval(line);
-                        System.out.print(BLUE + result);
-                        break;
 
                 }
 
