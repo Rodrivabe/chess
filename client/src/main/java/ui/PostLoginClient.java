@@ -17,11 +17,11 @@ import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
 public class PostLoginClient {
-    private String visitorName = null;
+    private final String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
     private final ClientSession session;
-    private BoardPrint boardPrinter;
+    private final BoardPrint boardPrinter;
 
 
     public PostLoginClient(String serverUrl, ClientSession session) {

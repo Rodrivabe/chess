@@ -18,8 +18,8 @@ public class GamePlayClient {
     private final ServerFacade server;
     private final String serverUrl;
     private final ClientSession session;
-    private Collection<GameData> lastGameList = new ArrayList<>();
-    private BoardPrint boardPrinter;
+    private final Collection<GameData> lastGameList = new ArrayList<>();
+    private final BoardPrint boardPrinter;
 
     public GamePlayClient(String serverUrl, ClientSession session) {
         server = new ServerFacade(serverUrl);
