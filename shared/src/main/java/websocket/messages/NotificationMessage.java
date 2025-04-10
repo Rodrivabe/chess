@@ -55,8 +55,12 @@ public class NotificationMessage extends ServerMessage {
                 };
                 break;
             case LEAVE:
-                String.format("%s has left the game", username);
+                notifyText = String.format("%s has left the game", username);
                 break;
+            case RESIGN:
+                notifyText = String.format("%s has resigned the game", username);
+                break;
+
 
 
         }

@@ -82,7 +82,15 @@ public class WebSocketHandler {
                 }
 
                 case LEAVE -> leaveGame(username, command, colorFlag, game);
-                case RESIGN -> resign(username, command, colorFlag, game);
+                case RESIGN -> {
+                    if (sessionState.gameState == GameState.GAME_OVER){
+                        throw new InvalidMoveException("The game is Over");
+                    }
+                    if (colorFlag == null){
+                        throw new InvalidMoveException("You are an observer. You can't resign a game");
+                    }
+                    resign(username, command, colorFlag, game);
+                }
             }
         } catch (JsonSyntaxException | IOException | ResponseException | InvalidMoveException e) {
             sendMessage(session.getRemote(), new ErrorMessage("Error: " + e.getMessage()));
@@ -203,18 +211,27 @@ public class WebSocketHandler {
     }
 
 
-    private void resign(String username, UserGameCommand command, ChessGame.TeamColor colorFlag, GameData game) throws ResponseException {
+    private void resign(String username, UserGameCommand command, ChessGame.TeamColor teamColor, GameData game) throws ResponseException {
         int gameID = command.getGameID();
 
         //Server marks the game as over
         sessionState.gameState = GameState.GAME_OVER;
+        GameData updatedGame = game;
 
         //Game is updated in the database.
-        gameDAO.updateGame(gameID, game);
+        if(teamColor == WHITE){
+            updatedGame = new GameData(gameID, null, game.blackUsername(), game.gameName(),
+                    game.game());
+        } else if (teamColor == BLACK) {
+            updatedGame = new GameData(gameID, game.whiteUsername(), null, game.gameName(),
+                    game.game());
+        }
+
+        gameDAO.updateGame(gameID, updatedGame);
 
         //Server sends a Notification message to all clients in that game informing them that the root client resigned. This applies to both players and observers.
-        NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game, command, "", colorFlag, "");
-        NotificationMessage.sendNotification(resignNotification, connections, gameID, username);
+        NotificationMessage resignNotification = NotificationMessage.getServerMessage(username, game, command, "", teamColor, "");
+        NotificationMessage.sendNotification(resignNotification, connections, gameID, null);
     }
 
     private ChessGame.TeamColor getUsersColor(String username, GameData game) {
