@@ -2,7 +2,7 @@ package websocket.messages;
 
 import com.google.gson.Gson;
 import model.GameData;
-import server.websocket.ConnectionManager;
+import websocket.ConnectionManager;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;

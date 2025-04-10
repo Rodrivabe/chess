@@ -1,4 +1,4 @@
-package server.websocket;
+package websocket;
 
 import java.io.IOException;
 import java.util.ArrayList;
